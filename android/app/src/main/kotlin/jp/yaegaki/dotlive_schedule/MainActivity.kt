@@ -1,4 +1,4 @@
-package com.example.dotlive_schedule
+package jp.yaegaki.dotlive_schedule
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
