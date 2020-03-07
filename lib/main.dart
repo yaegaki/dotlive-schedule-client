@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 void main() => runApp(MyApp());
 
@@ -45,6 +48,39 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _token = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    _firebaseMessaging.requestNotificationPermissions(
+      const IosNotificationSettings(
+        sound: true,
+        badge: true,
+        alert: true
+      )
+    );
+
+    _firebaseMessaging.onIosSettingsRegistered.listen((s) {
+    });
+
+    _firebaseMessaging.getToken().then((s) {
+      setState(() {
+        _token = s;
+      });
+      print(s);
+    });
+
+    _firebaseMessaging.onTokenRefresh.listen((s) {
+      setState(() {
+        _token = s;
+      });
+      print(s);
+    });
+
+    _token = "test";
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -96,6 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
+              style: Theme.of(context).textTheme.display1,
+            ),
+            Text(
+              '$_token',
               style: Theme.of(context).textTheme.display1,
             ),
           ],
