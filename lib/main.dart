@@ -162,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () async {
                   if (e.url != '') {
                     if (await canLaunch(e.url)) {
-                      await launch(e.url);
+                      await launch(e.url, forceSafariVC: false);
                     }
                   }
                 },
