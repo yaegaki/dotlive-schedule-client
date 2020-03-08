@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:dotlive_schedule/schedule.dart';
+import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -47,8 +53,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _pt = "";
   int _counter = 0;
   String _token = "";
+  int _selectedIndex = 0;
+  Schedule _schedule;
+  int _scheduleIndex = 0;
 
   @override
   void initState() {
@@ -62,24 +72,38 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     );
 
-    _firebaseMessaging.onIosSettingsRegistered.listen((s) {
-    });
-
     _firebaseMessaging.getToken().then((s) {
       setState(() {
         _token = s;
       });
-      print(s);
     });
 
     _firebaseMessaging.onTokenRefresh.listen((s) {
       setState(() {
         _token = s;
       });
-      print(s);
     });
 
     _token = "test";
+    fetchSchedule(_scheduleIndex);
+  }
+
+  void fetchSchedule(int scheduleIndex) {
+    final scheduleURL = 'https://dotlive-schedule.appspot.com?q=$scheduleIndex';
+    setState(() {
+      _scheduleIndex = scheduleIndex;
+      _schedule = null;
+    });
+
+    http.get(scheduleURL).then((res) {
+      final schedule = Schedule.fromJSON(jsonDecode(res.body));
+      setState(() {
+        _schedule = schedule;
+        final s = _schedule.date.add(Duration(hours: 9));
+        const weekLabels = '日月火水木金土日';
+        _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
+      });
+    });
   }
 
   void _incrementCounter() {
@@ -95,19 +119,62 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
+    Widget child;
+    if (_selectedIndex == 0) {
+      if (_schedule == null)
+      {
+        child = Center(
+          child: Text('now loading...'),
+        );
+      }
+      else
+      {
+        child = ListView.builder(
+          itemBuilder: (context, index) {
+            final e = _schedule.entries[index];
+            final s = e.startAt.add(Duration(hours: 9));
+
+            final title = '${s.hour.toString().padLeft(2, '0')}:${s.minute.toString().padLeft(2, '0')}~ ${e.actorName}';
+            final url = e.icon;
+
+            String body;
+            bool hasTrailing;
+            if (e.text == '') {
+              body = '配信予定';
+              hasTrailing = false;
+            }
+            else {
+              body = e.text;
+              hasTrailing = true;
+            }
+
+            return Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(url),
+                  maxRadius: 25,
+                  minRadius: 25,
+                ),
+                title: Text(title),
+                subtitle: Text(body),
+                isThreeLine: true,
+                trailing: hasTrailing ? Icon(Icons.keyboard_arrow_right) : null,
+                onTap: () async {
+                  if (e.url != '') {
+                    if (await canLaunch(e.url)) {
+                      await launch(e.url);
+                    }
+                  }
+                },
+              )
+            );
+          },
+          itemCount: _schedule.entries.length,
+        );
+      }
+    }
+    else {
+      child = Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -140,12 +207,63 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      );
+    }
+
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(_pt == '' ? widget.title : _pt),
+        leading: IconButton(
+          icon: Icon(Icons.keyboard_arrow_left),
+          onPressed: () {
+            fetchSchedule(_scheduleIndex - 1);
+          },
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.keyboard_arrow_right),
+            onPressed: () => fetchSchedule(_scheduleIndex + 1),
+          ),
+        ],
       ),
+      body: child,
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomNavigationBar: FFNavigationBar(
+        theme: FFNavigationBarTheme(
+          barBackgroundColor: Colors.white,
+          selectedItemBackgroundColor: Colors.green,
+          selectedItemIconColor: Colors.white,
+          selectedItemLabelColor: Colors.black,
+        ),
+        selectedIndex: _selectedIndex,
+        onSelectTab: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: [
+          FFNavigationBarItem(
+            iconData: Icons.calendar_today,
+            label: 'Schedule',
+          ),
+          FFNavigationBarItem(
+            iconData: Icons.people,
+            label: 'Contacts',
+          ),
+        ],
+      ),
     );
   }
 }
