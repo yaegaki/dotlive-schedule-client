@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _token = "";
   int _selectedIndex = 0;
   Schedule _schedule;
-  int _scheduleIndex = 0;
+  DateTime _scheduleDate;
 
   @override
   void initState() {
@@ -85,24 +85,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     _token = "test";
-    fetchSchedule(_scheduleIndex);
+    _scheduleDate = DateTime.now().toUtc();
+    print(_scheduleDate);
+    print(_scheduleDate.timeZoneOffset);
+    fetchSchedule(_scheduleDate);
   }
 
-  void fetchSchedule(int scheduleIndex) {
-    final scheduleURL = 'https://dotlive-schedule.appspot.com?q=$scheduleIndex';
-    setState(() {
-      _scheduleIndex = scheduleIndex;
-      _schedule = null;
-    });
-
-    http.get(scheduleURL).then((res) {
-      final schedule = Schedule.fromJSON(jsonDecode(res.body));
+  Future<void> fetchSchedule(DateTime scheduleDate) async {
+    final s = scheduleDate.add(Duration(hours: 9));
+    final scheduleURL = 'https://dotlive-schedule.appspot.com?q=${s.year}-${s.month}-${s.day}';
+    if (_scheduleDate != scheduleDate) {
       setState(() {
-        _schedule = schedule;
-        final s = _schedule.date.add(Duration(hours: 9));
+
+        _scheduleDate = scheduleDate;
+        _schedule = null;
         const weekLabels = '日月火水木金土日';
         _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
       });
+    }
+
+    final res = await http.get(scheduleURL);
+    if (_scheduleDate != scheduleDate) return;
+
+    final schedule = Schedule.fromJSON(jsonDecode(res.body));
+    setState(() {
+      _schedule = schedule;
     });
   }
 
@@ -129,47 +136,54 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       else
       {
-        child = ListView.builder(
-          itemBuilder: (context, index) {
-            final e = _schedule.entries[index];
-            final s = e.startAt.add(Duration(hours: 9));
-
-            final title = '${s.hour.toString().padLeft(2, '0')}:${s.minute.toString().padLeft(2, '0')}~ ${e.actorName}';
-            final url = e.icon;
-
-            String body;
-            bool hasTrailing;
-            if (e.text == '') {
-              body = '配信予定';
-              hasTrailing = false;
-            }
-            else {
-              body = e.text;
-              hasTrailing = true;
-            }
-
-            return Card(
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(url),
-                  maxRadius: 25,
-                  minRadius: 25,
-                ),
-                title: Text(title),
-                subtitle: Text(body),
-                isThreeLine: true,
-                trailing: hasTrailing ? Icon(Icons.keyboard_arrow_right) : null,
-                onTap: () async {
-                  if (e.url != '') {
-                    if (await canLaunch(e.url)) {
-                      await launch(e.url, forceSafariVC: false);
-                    }
-                  }
-                },
-              )
-            );
+        child = RefreshIndicator(
+          onRefresh: () async {
+            await fetchSchedule(_scheduleDate);
           },
-          itemCount: _schedule.entries.length,
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 20),
+            itemBuilder: (context, index) {
+              final e = _schedule.entries[index];
+              final s = e.startAt.add(Duration(hours: 9));
+
+              final title = '${s.hour.toString().padLeft(2, '0')}:${s.minute.toString().padLeft(2, '0')}~ ${e.actorName}';
+              final url = e.icon;
+
+              String body;
+              bool hasTrailing;
+              if (e.text == '') {
+                body = '配信予定';
+                hasTrailing = false;
+              }
+              else {
+                body = e.text;
+                hasTrailing = true;
+              }
+
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(url),
+                    maxRadius: 25,
+                    minRadius: 25,
+                  ),
+                  title: Text(title),
+                  subtitle: Text(body),
+                  isThreeLine: true,
+                  trailing: hasTrailing ? Icon(Icons.keyboard_arrow_right) : null,
+                  onTap: () async {
+                    if (e.url != '') {
+                      if (await canLaunch(e.url)) {
+                        await launch(e.url, forceSafariVC: false);
+                      }
+                    }
+                  },
+                )
+              );
+            },
+            itemCount: _schedule.entries.length,
+          ),
         );
       }
     }
@@ -224,13 +238,13 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: IconButton(
           icon: Icon(Icons.keyboard_arrow_left),
           onPressed: () {
-            fetchSchedule(_scheduleIndex - 1);
+            fetchSchedule(_scheduleDate.subtract(Duration(days: 1)));
           },
         ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.keyboard_arrow_right),
-            onPressed: () => fetchSchedule(_scheduleIndex + 1),
+            onPressed: () => fetchSchedule(_scheduleDate.add(Duration(days: 1))),
           ),
         ],
       ),
