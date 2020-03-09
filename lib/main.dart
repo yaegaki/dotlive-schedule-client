@@ -94,15 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> fetchSchedule(DateTime scheduleDate) async {
     final s = scheduleDate.add(Duration(hours: 9));
     final scheduleURL = 'https://dotlive-schedule.appspot.com?q=${s.year}-${s.month}-${s.day}';
-    if (_scheduleDate != scheduleDate) {
       setState(() {
+        if (_scheduleDate != scheduleDate) {
+            _scheduleDate = scheduleDate;
+            _schedule = null;
+        }
 
-        _scheduleDate = scheduleDate;
-        _schedule = null;
         const weekLabels = '日月火水木金土日';
         _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
       });
-    }
 
     final res = await http.get(scheduleURL);
     if (_scheduleDate != scheduleDate) return;
@@ -113,17 +113,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget child;
@@ -131,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_schedule == null)
       {
         child = Center(
-          child: Text('now loading...'),
+          child: const CircularProgressIndicator(),
         );
       }
       else
@@ -249,11 +238,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: child,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
       bottomNavigationBar: FFNavigationBar(
         theme: FFNavigationBarTheme(
           barBackgroundColor: Colors.white,
