@@ -1,11 +1,7 @@
-import 'dart:convert';
-
-import 'package:dotlive_schedule/schedule.dart';
+import 'package:dotlive_schedule/schedule_list.dart';
 import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -57,8 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String _token = "";
   int _selectedIndex = 0;
-  Schedule _schedule;
-  DateTime _scheduleDate;
+  DateTime _startDate;
+  PageController _pageController;
+  int _selectedPageIndex = 0;
 
   @override
   void initState() {
@@ -85,96 +82,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     _token = "test";
-    _scheduleDate = DateTime.now().toUtc();
-    print(_scheduleDate);
-    print(_scheduleDate.timeZoneOffset);
-    fetchSchedule(_scheduleDate);
-  }
 
-  Future<void> fetchSchedule(DateTime scheduleDate) async {
-    final s = scheduleDate.add(Duration(hours: 9));
-    final scheduleURL = 'https://dotlive-schedule.appspot.com?q=${s.year}-${s.month}-${s.day}';
-      setState(() {
-        if (_scheduleDate != scheduleDate) {
-            _scheduleDate = scheduleDate;
-            _schedule = null;
-        }
-
-        const weekLabels = '日月火水木金土日';
-        _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
-      });
-
-    final res = await http.get(scheduleURL);
-    if (_scheduleDate != scheduleDate) return;
-
-    final schedule = Schedule.fromJSON(jsonDecode(res.body));
-    setState(() {
-      _schedule = schedule;
-    });
+    _pageController = PageController(initialPage: 6);
+    _selectedPageIndex = _pageController.initialPage;
+    _startDate = DateTime.now().toUtc().subtract(Duration(days: 6));
+    final s = _startDate.add(Duration(hours: 9)).add(Duration(days: 6));
+    const weekLabels = '日月火水木金土日';
+    _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
   }
 
   @override
   Widget build(BuildContext context) {
     Widget child;
     if (_selectedIndex == 0) {
-      if (_schedule == null)
-      {
-        child = Center(
-          child: const CircularProgressIndicator(),
-        );
-      }
-      else
-      {
-        child = RefreshIndicator(
-          onRefresh: () async {
-            await fetchSchedule(_scheduleDate);
-          },
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 20),
-            itemBuilder: (context, index) {
-              final e = _schedule.entries[index];
-              final s = e.startAt.add(Duration(hours: 9));
-
-              final title = '${s.hour.toString().padLeft(2, '0')}:${s.minute.toString().padLeft(2, '0')}~ ${e.actorName}';
-              final url = e.icon;
-
-              String body;
-              bool hasTrailing;
-              if (e.text == '') {
-                body = '配信予定';
-                hasTrailing = false;
-              }
-              else {
-                body = e.text;
-                hasTrailing = true;
-              }
-
-              return Card(
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(url),
-                    maxRadius: 25,
-                    minRadius: 25,
-                  ),
-                  title: Text(title),
-                  subtitle: Text(body),
-                  isThreeLine: true,
-                  trailing: hasTrailing ? Icon(Icons.keyboard_arrow_right) : null,
-                  onTap: () async {
-                    if (e.url != '') {
-                      if (await canLaunch(e.url)) {
-                        await launch(e.url, forceSafariVC: false);
-                      }
-                    }
-                  },
-                )
-              );
-            },
-            itemCount: _schedule.entries.length,
-          ),
-        );
-      }
+      child = PageView.builder(
+        // controller: _pageController,
+        controller: _pageController,
+        itemBuilder: (_, index) {
+          final date = _startDate.add(Duration(days: index));
+          return ScheduleList(date);
+        },
+        onPageChanged: (pageIndex) {
+          setState(() {
+            final s = _startDate.add(Duration(hours: 9)).add(Duration(days: pageIndex));
+            const weekLabels = '日月火水木金土日';
+            _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
+            _selectedPageIndex = pageIndex;
+          });
+        },
+      );
     }
     else {
       child = Center(
@@ -213,6 +149,23 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
+    final now = DateTime.now().toUtc().add(Duration(hours: 9));
+    final shownDate = _startDate.add(Duration(days: _selectedPageIndex, hours: 9));
+    final diffDays = shownDate.difference(now).inDays;
+    List<Widget> actions;
+    if (diffDays != 0 || now.day != shownDate.day) {
+      actions = [
+        IconButton(
+          icon: Icon(Icons.calendar_today),
+          onPressed: () {
+            final diff = DateTime.now().difference(_startDate).inDays;
+            _pageController.jumpToPage(diff);
+          }
+        ),
+      ];
+    }
+    
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -224,18 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(_pt == '' ? widget.title : _pt),
-        leading: IconButton(
-          icon: Icon(Icons.keyboard_arrow_left),
-          onPressed: () {
-            fetchSchedule(_scheduleDate.subtract(Duration(days: 1)));
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.keyboard_arrow_right),
-            onPressed: () => fetchSchedule(_scheduleDate.add(Duration(days: 1))),
-          ),
-        ],
+        actions: actions,
       ),
       body: child,
       bottomNavigationBar: FFNavigationBar(
