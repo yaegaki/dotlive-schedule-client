@@ -1,7 +1,12 @@
-import 'package:dotlive_schedule/schedule_list.dart';
+import 'package:dotlive_schedule/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/sort_option.dart';
+import 'package:dotlive_schedule/widgets/schedule_app_bar.dart';
+import 'package:dotlive_schedule/widgets/schedule_page.dart';
 import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:provider/provider.dart';
 
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
@@ -25,35 +30,23 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _pt = "";
   int _counter = 0;
   String _token = "";
   int _selectedIndex = 0;
-  DateTime _startDate;
+  DateTimeJST _startDate;
   PageController _pageController;
   int _selectedPageIndex = 0;
 
@@ -62,12 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _firebaseMessaging.requestNotificationPermissions(
-      const IosNotificationSettings(
-        sound: true,
-        badge: true,
-        alert: true
-      )
-    );
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
 
     _firebaseMessaging.getToken().then((s) {
       setState(() {
@@ -83,36 +71,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _token = "test";
 
-    _pageController = PageController(initialPage: 6);
-    _selectedPageIndex = _pageController.initialPage;
-    _startDate = DateTime.now().toUtc().subtract(Duration(days: 6));
-    final s = _startDate.add(Duration(hours: 9)).add(Duration(days: 6));
-    const weekLabels = '日月火水木金土日';
-    _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
+    _startDate = DateTimeJST.now();
   }
 
   @override
   Widget build(BuildContext context) {
     Widget child;
     if (_selectedIndex == 0) {
-      child = PageView.builder(
-        // controller: _pageController,
-        controller: _pageController,
-        itemBuilder: (_, index) {
-          final date = _startDate.add(Duration(days: index));
-          return ScheduleList(date);
-        },
-        onPageChanged: (pageIndex) {
-          setState(() {
-            final s = _startDate.add(Duration(hours: 9)).add(Duration(days: pageIndex));
-            const weekLabels = '日月火水木金土日';
-            _pt = '${s.year}/${s.month}月${s.day}日(${weekLabels[s.weekday]})';
-            _selectedPageIndex = pageIndex;
-          });
-        },
-      );
-    }
-    else {
+      child = SchedulePage(_startDate);
+    } else {
       child = Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -149,60 +116,46 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    final now = DateTime.now().toUtc().add(Duration(hours: 9));
-    final shownDate = _startDate.add(Duration(days: _selectedPageIndex, hours: 9));
-    final diffDays = shownDate.difference(now).inDays;
-    List<Widget> actions;
-    if (diffDays != 0 || now.day != shownDate.day) {
-      actions = [
-        IconButton(
-          icon: Icon(Icons.calendar_today),
-          onPressed: () {
-            final diff = DateTime.now().difference(_startDate).inDays;
-            _pageController.jumpToPage(diff);
-          }
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ScheduleManager>(
+          create: (_) => ScheduleManager(_startDate),
         ),
-      ];
-    }
-    
-
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(_pt == '' ? widget.title : _pt),
-        actions: actions,
-      ),
-      body: child,
-      bottomNavigationBar: FFNavigationBar(
-        theme: FFNavigationBarTheme(
-          barBackgroundColor: Colors.white,
-          selectedItemBackgroundColor: Colors.green,
-          selectedItemIconColor: Colors.white,
-          selectedItemLabelColor: Colors.black,
+        ChangeNotifierProvider<SortOption>(
+          create: (_) => SortOption(),
         ),
-        selectedIndex: _selectedIndex,
-        onSelectTab: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: [
-          FFNavigationBarItem(
-            iconData: Icons.calendar_today,
-            label: 'Schedule',
+      ],
+      child: Scaffold(
+        appBar: ScheduleAppBar(),
+        body: child,
+        bottomNavigationBar: FFNavigationBar(
+          theme: FFNavigationBarTheme(
+            barBackgroundColor: Colors.white,
+            selectedItemBackgroundColor: Colors.green,
+            selectedItemIconColor: Colors.white,
+            selectedItemLabelColor: Colors.black,
           ),
-          FFNavigationBarItem(
-            iconData: Icons.people,
-            label: 'Contacts',
-          ),
-        ],
+          selectedIndex: _selectedIndex,
+          onSelectTab: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: [
+            FFNavigationBarItem(
+              iconData: Icons.calendar_today,
+              label: 'スケジュール',
+            ),
+            FFNavigationBarItem(
+              iconData: Icons.history,
+              label: '履歴',
+            ),
+            FFNavigationBarItem(
+              iconData: Icons.settings,
+              label: '設定',
+            )
+          ],
+        ),
       ),
     );
   }

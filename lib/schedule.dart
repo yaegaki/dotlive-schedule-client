@@ -1,12 +1,18 @@
-class Schedule {
-  final DateTime date;
-  final List<ScheduleEntry> entries;
+import 'datetime_jst.dart';
 
-  Schedule(this.date, this.entries);
+class Schedule {
+  final DateTimeJST date;
+  final List<ScheduleEntry> entries;
+  final bool hasError;
+
+  Schedule(this.date, this.entries) : hasError = false;
+
+  Schedule.error() : date = null, entries = null, hasError = true;
 
   Schedule.fromJSON(Map<String, dynamic> json)
-    : date = DateTime.parse(json['date']),
-      entries = toEntries(json['entries']);
+    : date = DateTimeJST.parse(json['date']),
+      entries = toEntries(json['entries']),
+      hasError = false;
 
   static List<ScheduleEntry> toEntries(List<dynamic> entries) {
     return entries.map((e) => ScheduleEntry.fromJSON(e)).toList();
@@ -16,7 +22,7 @@ class Schedule {
 class ScheduleEntry {
   final String actorName;
   final String icon;
-  final DateTime startAt;
+  final DateTimeJST startAt;
   final String videoId;
   final String url;
   final bool planned;
@@ -28,7 +34,7 @@ class ScheduleEntry {
   ScheduleEntry.fromJSON(Map<String, dynamic> json)
     : actorName = json['actorName'],
       icon = json['icon'],
-      startAt = DateTime.parse(json['startAt']),
+      startAt = DateTimeJST.parse(json['startAt']),
       videoId = json['videoId'],
       url = json['url'],
       planned = json['planned'],

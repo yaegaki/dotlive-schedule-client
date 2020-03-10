@@ -1,80 +1,74 @@
-import 'dart:convert';
-
+import 'package:dotlive_schedule/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule.dart';
+import 'package:dotlive_schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/sort_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ScheduleList extends StatefulWidget {
-  final DateTime date;
+class ScheduleList extends StatelessWidget {
+  final DateTimeJST date;
 
   ScheduleList(this.date);
-
-  @override
-  _ScheduleListState createState() => _ScheduleListState();
-}
-
-class _ScheduleListState extends State<ScheduleList> {
-  Schedule _schedule;
-  int _version = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    fetchSchedule();
-  }
-
-  Future<void> fetchSchedule() async {
-    final jst = widget.date.add(Duration(hours: 9));
-    final url =
-        'https://dotlive-schedule.appspot.com?q=${jst.year}-${jst.month}-${jst.day}';
-    _version += 1;
-    final temp = _version;
-    final res = await http.get(url);
-    if (!mounted) return;
-    if (temp != _version) return;
-
-    setState(() {
-      _schedule = Schedule.fromJSON(jsonDecode(res.body));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_schedule == null) {
-      return Center(child: CircularProgressIndicator());
-    }
+    final manager = Provider.of<ScheduleManager>(context, listen: false);
 
-    int itemCount;
-    Function(BuildContext, int) itemBuilder;
-    if (_schedule.entries.length == 0) {
-      itemCount = 1;
-      itemBuilder = (_, __) {
-        return Card(
-            child: ListTile(
-          title: Text('予定がありません'),
-        ));
-      };
-    } else {
-      itemCount = _schedule.entries.length;
-      itemBuilder = (_, index) => _createCard(_schedule.entries[index]);
-    }
+    return Selector<ScheduleManager, Schedule>(
+      selector: (_, m) => m.getSchedule(date),
+      builder: (_, schedule, __) {
+        if (schedule == null) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-    return RefreshIndicator(
-      onRefresh: () => fetchSchedule(),
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 20),
-        itemBuilder: itemBuilder,
-        itemCount: itemCount,
-      ),
+        int itemCount;
+        if (schedule.hasError || schedule.entries.length == 0) {
+          itemCount = 1;
+        } else {
+          itemCount = schedule.entries.length;
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => manager.fetchSchedule(date, true),
+          child: Consumer<SortOption>(
+            builder: (_, op, __) {
+              return ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 20),
+                itemBuilder: (_, index) {
+                  if (schedule.hasError) {
+                    return _buildTextCard('エラーが発生しました');
+                  }
+
+                  if (schedule.entries.length == 0) {
+                    return _buildTextCard('予定がありません');
+                  }
+
+                  if (!op.asc) {
+                    index = schedule.entries.length - 1 - index;
+                  }
+
+                  return _buildCard(schedule.entries[index]);
+                },
+                itemCount: itemCount,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
-  Widget _createCard(ScheduleEntry entry) {
-    final d = entry.startAt.add(Duration(hours: 9));
+  Widget _buildTextCard(String text) {
+    return Card(
+        child: ListTile(
+      title: Text(text),
+    ));
+  }
+
+  Widget _buildCard(ScheduleEntry entry) {
+    final d = entry.startAt;
     final title =
         '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}~ ${entry.actorName}';
     final icon = entry.icon;
