@@ -25,10 +25,13 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       },
       child: Consumer<SortOption>(builder: (_, op, __) {
-        return IconButton(
-          icon: Icon(Icons.sort),
-          onPressed: () => op.update(!op.asc),
-        );
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.diagonal3Values(1.0, op.asc ? -1.0 : 1.0, 1.0),
+            child: IconButton(
+              icon: Icon(Icons.sort),
+              onPressed: () => op.update(!op.asc),
+            ));
       }),
     );
   }
@@ -36,7 +39,8 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
-  static bool _isToday(DateTimeJST d) => DateTimeJST.now().differenceDay(d) == 0;
+  static bool _isToday(DateTimeJST d) =>
+      DateTimeJST.now().differenceDay(d) == 0;
 
   static String _createTitle(DateTimeJST d) {
     const weekLabels = '日月火水木金土日';
