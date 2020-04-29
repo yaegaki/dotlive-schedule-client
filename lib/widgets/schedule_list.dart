@@ -49,7 +49,7 @@ class ScheduleList extends StatelessWidget {
                     index = schedule.entries.length - 1 - index;
                   }
 
-                  return _buildCard(schedule.entries[index]);
+                  return _buildCard(schedule.date, schedule.entries[index]);
                 },
                 itemCount: itemCount,
               );
@@ -67,10 +67,13 @@ class ScheduleList extends StatelessWidget {
     ));
   }
 
-  Widget _buildCard(ScheduleEntry entry) {
+  Widget _buildCard(DateTimeJST baseDate, ScheduleEntry entry) {
     final d = entry.startAt;
+    final diff = d.differenceDay(baseDate);
+    final hour = diff > 0 ? diff * 24 + d.hour : d.hour;
+
     final title =
-        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}~ ${entry.actorName}';
+        '${hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}~ ${entry.actorName}';
     final icon = entry.icon;
 
     String body;
