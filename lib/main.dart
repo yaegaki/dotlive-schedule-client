@@ -81,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
             selectedItemBackgroundColor: Colors.green,
             selectedItemIconColor: Colors.white,
             selectedItemLabelColor: Colors.black,
+            showSelectedItemShadow: false,
           ),
           selectedIndex: _selectedIndex,
           onSelectTab: (index) {
