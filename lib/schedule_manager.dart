@@ -37,7 +37,7 @@ class ScheduleManager with ChangeNotifier {
     _version += 1;
     final v = _version;
 
-    final url = 'https://dotlive-schedule.appspot.com?q=$key';
+    final url = 'https://dotlive-schedule.appspot.com/api/schedule?q=$key';
     Schedule schedule;
     try {
       final res = await http.get(url);
