@@ -1,10 +1,12 @@
 import 'package:dotlive_schedule/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule_manager.dart';
 import 'package:dotlive_schedule/sort_option.dart';
-import 'package:dotlive_schedule/widgets/schedule_app_bar.dart';
-import 'package:dotlive_schedule/widgets/schedule_page.dart';
-import 'package:dotlive_schedule/widgets/settings_app_bar.dart';
-import 'package:dotlive_schedule/widgets/settings_page.dart';
+import 'package:dotlive_schedule/widgets/calendar/calendar_app_bar.dart';
+import 'package:dotlive_schedule/widgets/calendar/calendar_page.dart';
+import 'package:dotlive_schedule/widgets/schedule/schedule_app_bar.dart';
+import 'package:dotlive_schedule/widgets/schedule/schedule_page.dart';
+import 'package:dotlive_schedule/widgets/settings/settings_app_bar.dart';
+import 'package:dotlive_schedule/widgets/settings/settings_page.dart';
 import 'package:ff_navigation_bar/ff_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -56,11 +58,23 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget child;
     PreferredSizeWidget appBar;
     if (_selectedIndex == 0) {
-      child = SchedulePage(_startDate);
-      appBar = ScheduleAppBar();
     } else {
       child = SettingsPage();
       appBar = SettingsAppBar();
+    }
+    switch (_selectedIndex) {
+      case 0:
+        child = SchedulePage(_startDate);
+        appBar = ScheduleAppBar();
+        break;
+      case 1:
+        child = CalendarPage();
+        appBar = CalendarAppBar();
+        break;
+      default:
+        child = SettingsPage();
+        appBar = SettingsAppBar();
+        break;
     }
 
     return MultiProvider(
@@ -91,8 +105,12 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           items: [
             FFNavigationBarItem(
-              iconData: Icons.calendar_today,
+              iconData: Icons.bookmark,
               label: 'スケジュール',
+            ),
+            FFNavigationBarItem(
+              iconData: Icons.calendar_today,
+              label: 'カレンダー',
             ),
             FFNavigationBarItem(
               iconData: Icons.settings,

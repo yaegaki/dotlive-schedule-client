@@ -1,6 +1,6 @@
 import 'package:dotlive_schedule/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule_manager.dart';
-import 'package:dotlive_schedule/widgets/schedule_list.dart';
+import 'package:dotlive_schedule/widgets/schedule/schedule_list.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
