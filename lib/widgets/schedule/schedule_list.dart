@@ -1,7 +1,7 @@
-import 'package:dotlive_schedule/datetime_jst.dart';
-import 'package:dotlive_schedule/schedule.dart';
-import 'package:dotlive_schedule/schedule_manager.dart';
-import 'package:dotlive_schedule/sort_option.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule/schedule.dart';
+import 'package:dotlive_schedule/schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -9,8 +9,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleList extends StatelessWidget {
   final DateTimeJST date;
+  final bool canControl;
 
-  ScheduleList(this.date);
+  ScheduleList(this.date, {this.canControl = true});
+
   @override
   Widget build(BuildContext context) {
     final manager = Provider.of<ScheduleManager>(context, listen: false);
@@ -29,32 +31,40 @@ class ScheduleList extends StatelessWidget {
           itemCount = schedule.entries.length;
         }
 
+        final buildListView = (bool asc) {
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 20),
+            itemBuilder: (_, index) {
+              if (schedule.hasError) {
+                return _buildTextCard('エラーが発生しました');
+              }
+
+              if (schedule.entries.length == 0) {
+                return _buildTextCard('予定がありません');
+              }
+
+              if (!asc) {
+                index = schedule.entries.length - 1 - index;
+              }
+
+              return _buildCard(schedule.date, schedule.entries[index]);
+            },
+            itemCount: itemCount,
+          );
+        };
+
+        Widget child;
+        if (canControl) {
+          child = Consumer<ScheduleSortOption>(
+              builder: (_, op, __) => buildListView(op.asc));
+        } else {
+          child = buildListView(true);
+        }
+
         return RefreshIndicator(
           onRefresh: () => manager.fetchSchedule(date, true),
-          child: Consumer<SortOption>(
-            builder: (_, op, __) {
-              return ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 20),
-                itemBuilder: (_, index) {
-                  if (schedule.hasError) {
-                    return _buildTextCard('エラーが発生しました');
-                  }
-
-                  if (schedule.entries.length == 0) {
-                    return _buildTextCard('予定がありません');
-                  }
-
-                  if (!op.asc) {
-                    index = schedule.entries.length - 1 - index;
-                  }
-
-                  return _buildCard(schedule.date, schedule.entries[index]);
-                },
-                itemCount: itemCount,
-              );
-            },
-          ),
+          child: child,
         );
       },
     );

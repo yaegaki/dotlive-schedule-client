@@ -1,13 +1,14 @@
-import 'package:dotlive_schedule/datetime_jst.dart';
-import 'package:dotlive_schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule/schedule_manager.dart';
 import 'package:dotlive_schedule/widgets/schedule/schedule_list.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class SchedulePage extends StatefulWidget {
   final DateTimeJST _baseDate;
+  final bool canControl;
 
-  SchedulePage(this._baseDate);
+  SchedulePage(this._baseDate, {this.canControl = true});
 
   @override
   _SchedulePageState createState() => _SchedulePageState();
@@ -27,6 +28,9 @@ class _SchedulePageState extends State<SchedulePage> {
     _manager = Provider.of<ScheduleManager>(context, listen: false);
     _manager.addListener(_managerListener);
     _currentDate = _manager.currentDate;
+    if (!widget.canControl) {
+      _manager.fetchSchedule(widget._baseDate, true);
+    }
   }
 
   @override
@@ -38,6 +42,10 @@ class _SchedulePageState extends State<SchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.canControl) {
+      return ScheduleList(widget._baseDate, canControl: false);
+    }
+
     final _baseDate = widget._baseDate;
     if (_pageController == null || !_pageController.hasClients) {
       final page = _manager.currentDate.differenceDay(

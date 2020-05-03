@@ -1,4 +1,4 @@
-import 'package:dotlive_schedule/datetime_jst.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

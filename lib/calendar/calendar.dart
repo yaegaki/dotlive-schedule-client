@@ -1,4 +1,4 @@
-import 'datetime_jst.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
 
 class CalendarResponse {
   final Calendar calendar;
@@ -7,7 +7,7 @@ class CalendarResponse {
   CalendarResponse.fromJSON(Map<String, dynamic> json)
       : calendar = Calendar.fromJSON(json['calendar']),
         actors = _toActors(json['actors']);
-  
+
   static List<CalendarActor> _toActors(List<dynamic> actors) {
     return actors.map((a) => CalendarActor.fromJSON(a)).toList();
   }
@@ -28,37 +28,31 @@ class CalendarActor {
 
 class Calendar {
   final DateTimeJST baseDate;
-  final List<CalendarDay> days;
+  final Map<int, List<String>> dayMap;
 
   Calendar.fromJSON(Map<String, dynamic> json)
       : baseDate = DateTimeJST.parse(json['baseDate']),
-        days = _toDays(json['days']);
+        dayMap = _toDayMap(json['days']);
 
-  static List<CalendarDay> _toDays(List<dynamic> days) {
-    return days.map((d) => CalendarDay.fromJSON(d)).toList();
+  static Map<int, List<String>> _toDayMap(List<dynamic> days) {
+    final map = new Map<int, List<String>>();
+    days.map((d) => _CalendarDay.fromJSON(d)).forEach((d) {
+      map[d.day] = d.actorIds;
+    });
+
+    return map;
   }
 }
 
-class CalendarDay {
+class _CalendarDay {
   final int day;
-  final List<CalendarDayEntry> entries;
+  final List<String> actorIds;
 
-  CalendarDay.fromJSON(Map<String, dynamic> json)
+  _CalendarDay.fromJSON(Map<String, dynamic> json)
       : day = json['day'],
-        entries = _toEntries(json['entries']);
+        actorIds = _toActorIds(json['actorIds']);
 
-  static List<CalendarDayEntry> _toEntries(List<dynamic> entries) {
-    return entries.map((e) => CalendarDayEntry.fromJSON(e)).toList();
+  static List<String> _toActorIds(List<dynamic> entries) {
+    return entries.map((e) => e as String).toList();
   }
-}
-
-class CalendarDayEntry {
-  final String actorId;
-  final String text;
-  final String url;
-
-  CalendarDayEntry.fromJSON(Map<String, dynamic> json)
-      : actorId = json['actorId'],
-        text = json['text'],
-        url = json['url'];
 }

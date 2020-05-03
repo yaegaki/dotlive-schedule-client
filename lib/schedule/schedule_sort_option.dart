@@ -1,14 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SortOption with ChangeNotifier {
+class ScheduleSortOption with ChangeNotifier {
   static const _sortByAscKey = "sortByAsc";
   SharedPreferences _sharedPrefs;
 
   bool _asc = true;
   bool get asc => _asc;
 
-  SortOption() {
+  ScheduleSortOption() {
     _init();
   }
 

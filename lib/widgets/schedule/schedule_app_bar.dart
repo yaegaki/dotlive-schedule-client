@@ -1,13 +1,21 @@
-import 'package:dotlive_schedule/datetime_jst.dart';
-import 'package:dotlive_schedule/schedule_manager.dart';
-import 'package:dotlive_schedule/sort_option.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final DateTimeJST targetDate;
+
+  ScheduleAppBar({this.targetDate});
+
   @override
   Widget build(BuildContext context) {
+    if (targetDate != null) {
+      return AppBar(title: Text(_createTitle(targetDate)));
+    }
+
     final manager = Provider.of<ScheduleManager>(context, listen: false);
 
     return Selector<ScheduleManager, DateTimeJST>(
@@ -24,10 +32,10 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
           actions: action == null ? null : [action],
         );
       },
-      child: Consumer<SortOption>(builder: (_, op, __) {
+      child: Consumer<ScheduleSortOption>(builder: (_, op, __) {
         return Transform(
-          alignment: Alignment.center,
-          transform: Matrix4.diagonal3Values(1.0, op.asc ? -1.0 : 1.0, 1.0),
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(1.0, op.asc ? -1.0 : 1.0, 1.0),
             child: IconButton(
               icon: Icon(Icons.sort),
               onPressed: () => op.update(!op.asc),

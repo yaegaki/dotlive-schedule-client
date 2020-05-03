@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:dotlive_schedule/datetime_jst.dart';
-import 'package:dotlive_schedule/schedule.dart';
+import 'package:dotlive_schedule/common/constants.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule/schedule.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,7 +38,7 @@ class ScheduleManager with ChangeNotifier {
     _version += 1;
     final v = _version;
 
-    final url = 'https://dotlive-schedule.appspot.com/api/schedule?q=$key';
+    final url = '$baseURL/api/schedule?q=$key';
     Schedule schedule;
     try {
       final res = await http.get(url);

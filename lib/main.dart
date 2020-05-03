@@ -1,7 +1,8 @@
-import 'package:dotlive_schedule/datetime_jst.dart';
-import 'package:dotlive_schedule/schedule_manager.dart';
-import 'package:dotlive_schedule/sort_option.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/schedule/schedule_manager.dart';
+import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_app_bar.dart';
+import 'package:dotlive_schedule/widgets/calendar/calendar_filter_option.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_page.dart';
 import 'package:dotlive_schedule/widgets/schedule/schedule_app_bar.dart';
 import 'package:dotlive_schedule/widgets/schedule/schedule_page.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      darkTheme: ThemeData.dark(),
       home: MyHomePage(),
     );
   }
@@ -82,9 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ChangeNotifierProvider<ScheduleManager>(
           create: (_) => ScheduleManager(_startDate),
         ),
-        ChangeNotifierProvider<SortOption>(
-          create: (_) => SortOption(),
+        ChangeNotifierProvider<ScheduleSortOption>(
+          create: (_) => ScheduleSortOption(),
         ),
+        ChangeNotifierProvider<CalendarFilterOption>(
+          create: (_) => CalendarFilterOption(),
+        )
       ],
       child: Scaffold(
         appBar: appBar,
