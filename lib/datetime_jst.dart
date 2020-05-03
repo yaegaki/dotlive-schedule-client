@@ -12,6 +12,16 @@ class DateTimeJST {
 
   DateTimeJST(DateTime d) : _date = d.toUtc().add(timezoneOffset);
 
+  DateTimeJST.jst(int year,
+      [int month = 1,
+      int day = 1,
+      int hour = 0,
+      int minute = 0,
+      int second = 0,
+      int millisecond = 0,
+      int microsecond = 0])
+      : _date = DateTime.utc(year, month, day, hour, minute, second, millisecond);
+
   DateTimeJST.now() : this(DateTime.now());
   DateTimeJST.parse(string) : this(DateTime.parse(string));
 
@@ -22,8 +32,9 @@ class DateTimeJST {
   // 指定した時間と何日違うかを返す
   // 1時間しか差がなくても日付が違う場合は1を返す
   differenceDay(DateTimeJST d) {
+    // 日付未満を切り捨てて差分をとる
     final self = DateTime.utc(year, month, day);
     final other = DateTime.utc(d.year, d.month, d.day);
-    return DateTimeJST(self).difference(DateTimeJST(other)).inDays;
+    return self.difference(other).inDays;
   }
 }
