@@ -13,7 +13,7 @@ class ScheduleManager with ChangeNotifier {
   DateTimeJST get currentDate => _currentDate;
 
   ScheduleManager(this._currentDate) {
-    fetchSchedule(this._currentDate, false);
+    fetchSchedule(_currentDate, false);
   }
 
   void setCurrentDate(DateTimeJST date) {
@@ -24,13 +24,13 @@ class ScheduleManager with ChangeNotifier {
   }
 
   Schedule getSchedule(DateTimeJST date) {
-    final key = createKey(date);
+    final key = _createKey(date);
     if (!_scheduleMap.containsKey(key)) return null;
     return _scheduleMap[key].schedule;
   }
 
   Future<void> fetchSchedule(DateTimeJST date, bool reload) async {
-    final key = createKey(date);
+    final key = _createKey(date);
     if (!reload && _scheduleMap.containsKey(key)) {
       return;
     }
@@ -58,7 +58,7 @@ class ScheduleManager with ChangeNotifier {
     notifyListeners();
   }
 
-  String createKey(DateTimeJST d) => '${d.year}-${d.month}-${d.day}';
+  String _createKey(DateTimeJST d) => '${d.year}-${d.month}-${d.day}';
 }
 
 class _ScheduleManagerCacheEntry {

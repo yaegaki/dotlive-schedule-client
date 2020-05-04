@@ -1,3 +1,4 @@
+import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule/schedule_manager.dart';
 import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
@@ -87,9 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ChangeNotifierProvider<ScheduleSortOption>(
           create: (_) => ScheduleSortOption(),
         ),
+        ChangeNotifierProvider<CalendarManager>(
+          create: (_) => CalendarManager(_startDate),
+        ),
         ChangeNotifierProvider<CalendarFilterOption>(
           create: (_) => CalendarFilterOption(),
-        )
+        ),
       ],
       child: Scaffold(
         appBar: appBar,

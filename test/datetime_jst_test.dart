@@ -10,6 +10,18 @@ void main() {
       expect(t1.day, 1);
     });
 
+    test('before', () {
+      final t1 = DateTimeJST.jst(2020, 4, 1, 0, 0);
+      final t2 = DateTimeJST.jst(2020, 4, 1, 23, 59);
+      final t3 = DateTimeJST.jst(2020, 4, 2, 0, 0);
+      expect(t1.before(t2), true);
+      expect(t1.before(t3), true);
+      expect(t2.before(t3), true);
+      expect(t3.before(t1), false);
+      expect(t3.before(t2), false);
+      expect(t3.before(t3), false);
+    });
+
     test("differenceDay", () {
       final t1 = DateTimeJST.jst(2020, 4, 1, 0, 0);
       final t2 = DateTimeJST.jst(2020, 4, 1, 23, 59);

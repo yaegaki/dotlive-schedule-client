@@ -29,6 +29,8 @@ class DateTimeJST {
   DateTimeJST subtract(Duration d) => DateTimeJST(utc.subtract(d));
   Duration difference(DateTimeJST d) => _date.difference(d._date);
 
+  bool before(DateTimeJST d) => difference(d).isNegative;
+
   // 指定した時間と何日違うかを返す
   // 1時間しか差がなくても日付が違う場合は1を返す
   differenceDay(DateTimeJST d) {

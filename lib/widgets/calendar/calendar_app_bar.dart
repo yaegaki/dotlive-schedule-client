@@ -1,3 +1,5 @@
+import 'package:dotlive_schedule/calendar/calendar_manager.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_filter_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -6,7 +8,7 @@ import 'package:provider/provider.dart';
 class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<CalendarFilterOption>(builder: (context, op, _) {
+    return Consumer2<CalendarManager, CalendarFilterOption>(builder: (context, manager, op, _) {
       final actions = op.enabled
           ? <Widget>[
               IconButton(
@@ -24,9 +26,47 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                 },
               )
             ]
-          : null;
+          : <Widget>[];
+      actions.add(IconButton(
+        icon: Icon(Icons.cloud_circle),
+        onPressed: () {
+          manager.fetchCalendar(manager.currentDate, true);
+        },
+      ));
+      actions.add(IconButton(
+        icon: Icon(Icons.remove),
+        onPressed: () {
+          manager.clearAll();
+        },
+      ));
+      actions.add(IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          final c = manager.currentDate;
+          DateTimeJST date;
+          if (c.month == 1) {
+            date = DateTimeJST.jst(c.year - 1, 12);
+          } else {
+            date = DateTimeJST.jst(c.year, c.month - 1);
+          }
+          manager.setCurrentDate(date);
+        },
+      ));
+      actions.add(IconButton(
+        icon: Icon(Icons.arrow_forward),
+        onPressed: () {
+          final c = manager.currentDate;
+          DateTimeJST date;
+          if (c.month == 12) {
+            date = DateTimeJST.jst(c.year + 1, 1);
+          } else {
+            date = DateTimeJST.jst(c.year, c.month + 1);
+          }
+          manager.setCurrentDate(date);
+        },
+      ));
       return AppBar(
-        title: Text("カレンダー"),
+        title: Text('${manager.currentDate.year}年${manager.currentDate.month}月'),
         actions: actions,
       );
     });
