@@ -110,8 +110,7 @@ class CalendarManager with ChangeNotifier {
         if (cache.date.year == date.year && cache.date.month == date.month) {
           return cache;
         }
-      } catch (e) {
-        print(e);
+      } catch (_) {
       }
 
       // エラーが出たor古い場合は消す

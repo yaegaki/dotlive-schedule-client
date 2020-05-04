@@ -60,7 +60,7 @@ class CalendarDayMap {
   Map<int, List<String>> toMap() => new Map<int, List<String>>.from(_dayMap);
 
   List<String> getActorIds(int day) {
-    return _dayMap[day];
+    return _dayMap[day] ?? const <String>[];
   }
 }
 

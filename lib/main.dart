@@ -3,6 +3,7 @@ import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule/schedule_manager.dart';
 import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_app_bar.dart';
+import 'package:dotlive_schedule/widgets/calendar/calendar_drawer.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_filter_option.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_page.dart';
 import 'package:dotlive_schedule/widgets/schedule/schedule_app_bar.dart';
@@ -60,11 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget child;
     PreferredSizeWidget appBar;
-    if (_selectedIndex == 0) {
-    } else {
-      child = SettingsPage();
-      appBar = SettingsAppBar();
-    }
+    Widget drawer;
     switch (_selectedIndex) {
       case 0:
         child = SchedulePage(_startDate);
@@ -73,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         child = CalendarPage();
         appBar = CalendarAppBar();
+        drawer = CalendarDrawer();
         break;
       default:
         child = SettingsPage();
@@ -97,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       child: Scaffold(
         appBar: appBar,
+        drawer: drawer,
         body: child,
         bottomNavigationBar: FFNavigationBar(
           theme: FFNavigationBarTheme(
