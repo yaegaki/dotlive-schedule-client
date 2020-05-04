@@ -137,26 +137,23 @@ class CalendarView extends StatelessWidget {
       // アイコン
       for (int i = 0; i < 2; i++) {
         final actorIconBaseIndex = i * 2;
-        if (actorIconBaseIndex >= actorIcons.length) {
-          break;
-        }
 
         final icons = List<Widget>(2);
         for (int j = 0; j < 2; j++) {
           final actorIconIndex = actorIconBaseIndex + j;
           final child = actorIconIndex >= actorIcons.length
-              ? Container()
+              ? _buildActorIconPlaceholder()
               : _buildActorIcon(actorIcons[actorIconIndex]);
           icons[j] = Expanded(child: child);
         }
         children.add(Row(children: icons));
       }
 
-      List<Widget> bottomWidgets;
+      final bottomWidgets = <Widget>[];
+      final bottomWidgetTextStyle = TextStyle(
+                      color: Theme.of(context).hintColor, fontSize: 10);
       // フィルターされた数表示
       if (filtered > 0) {
-        bottomWidgets = List<Widget>();
-
         bottomWidgets.add(Align(
             alignment: Alignment.bottomLeft,
             child: Row(
@@ -167,8 +164,7 @@ class CalendarView extends StatelessWidget {
                 ),
                 Text(
                   filtered.toString(),
-                  style: TextStyle(
-                      color: Theme.of(context).hintColor, fontSize: 10),
+                  style: bottomWidgetTextStyle,
                 ),
               ],
             )));
@@ -176,27 +172,26 @@ class CalendarView extends StatelessWidget {
 
       // 入りきらなかった配信者の数表示
       if (actorIcons.length > 4) {
-        if (bottomWidgets == null) bottomWidgets = List<Widget>();
-
         bottomWidgets.add(Align(
             alignment: Alignment.bottomRight,
             child: Text(
-              "+${actorIcons.length - 4}",
+              '+${actorIcons.length - 4}',
               style:
-                  TextStyle(color: Theme.of(context).hintColor, fontSize: 10),
+                  bottomWidgetTextStyle,
             )));
       }
 
-      if (bottomWidgets != null) {
-        children.add(Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-            child: Stack(
-                alignment: AlignmentDirectional.bottomStart,
-                children: bottomWidgets),
-          ),
-        ));
+      // placeholder
+      if (bottomWidgets.length == 0) {
+        bottomWidgets.add(Text('', style: bottomWidgetTextStyle));
       }
+
+      children.add(Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+        child: Stack(
+            alignment: AlignmentDirectional.bottomStart,
+            children: bottomWidgets),
+      ));
 
       return Expanded(
         child: Container(
@@ -211,23 +206,33 @@ class CalendarView extends StatelessWidget {
               onPressed: () => _showSchedulePage(context, day, scheduleManager),
               child: Container(
                   color: backgroundColor,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints.tightFor(height: 86),
-                    child: Column(children: children),
-                  ))),
+                  child: Column(children: children))),
         ),
       );
     });
   }
 
+  Widget _buildActorIconPlaceholder() {
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+        child: AspectRatio(aspectRatio: 1, child: Container()));
+  }
+
   Widget _buildActorIcon(String url) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+        padding: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
         child: AspectRatio(
             aspectRatio: 1,
             child: Container(
+                // circleAvatarにボーダーをつけるために二重にする
                 child: CircleAvatar(
-              backgroundImage: NetworkImage(url),
+              backgroundColor: Colors.black,
+              child: Container(
+                padding: EdgeInsets.all(1),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(url),
+                ),
+              ),
             ))));
   }
 
