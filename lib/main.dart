@@ -23,12 +23,32 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const MaterialColor primaryColorSwatch = MaterialColor(
+      0xff00a3ef,
+      <int, Color>{
+        50:  Color(0xffe8f8ff),
+        100: Color(0xffc5ecff),
+        200: Color(0xff9fe0ff),
+        300: Color(0xff79d4ff),
+        400: Color(0xff5ccaff),
+        500: Color(0xff3fc1ff),
+        600: Color(0xff39bbff),
+        700: Color(0xff31b3ff),
+        800: Color(0xff29abff),
+        900: Color(0xff1b9eff),
+      },
+    );
+
+    const darkAccentColor = Color(0xff00a3ef);
+
     return MaterialApp(
       title: 'DotliveSchedule',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: primaryColorSwatch,
       ),
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData.dark().copyWith(
+        accentColor: darkAccentColor,
+      ),
       home: MyHomePage(),
     );
   }
@@ -78,6 +98,18 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
     }
 
+    final themeData = Theme.of(context);
+
+    Color selectedItemColor; 
+    switch (themeData.brightness) {
+      case Brightness.light:
+        selectedItemColor = themeData.primaryColor;
+        break;
+      case Brightness.dark:
+        selectedItemColor = themeData.accentColor;
+        break;
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ScheduleManager>(
@@ -99,10 +131,11 @@ class _MyHomePageState extends State<MyHomePage> {
         body: child,
         bottomNavigationBar: FFNavigationBar(
           theme: FFNavigationBarTheme(
-            barBackgroundColor: Colors.white,
-            selectedItemBackgroundColor: Colors.green,
-            selectedItemIconColor: Colors.white,
-            selectedItemLabelColor: Colors.black,
+            barBackgroundColor: themeData.canvasColor,
+            selectedItemBackgroundColor: selectedItemColor,
+            selectedItemIconColor: themeData.canvasColor,
+            selectedItemBorderColor: themeData.canvasColor,
+            selectedItemLabelColor: selectedItemColor,
             showSelectedItemShadow: false,
           ),
           selectedIndex: _selectedIndex,
