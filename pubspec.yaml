@@ -37,6 +37,7 @@ dev_dependencies:
     sdk: flutter
   
   flutter_launcher_icons: "^0.7.3"
+  flutter_native_splash: "^0.1.9"
 
 
 # For information on the generic Dart part of this file, see the
@@ -87,3 +88,7 @@ flutter_icons:
   image_path: "assets/images/icon.png"
   adaptive_icon_foreground: "assets/images/adaptive-foreground.png"
   adaptive_icon_background: "assets/images/adaptive-background.png"
+
+flutter_native_splash:
+  image: "assets/images/adaptive-foreground.png"
+  color: "3fc1ff"
