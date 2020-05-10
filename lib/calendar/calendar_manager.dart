@@ -14,7 +14,7 @@ class CalendarManager with ChangeNotifier {
   static const _calendarCacheKeyPrefix = 'calendar';
   SharedPreferences _sharedPrefs;
 
-  List<CalendarActor> _actors;
+  List<CalendarActor> _actors = [];
   final Map<String, _CalendarCache> _calendarMap =
       Map<String, _CalendarCache>();
   Future<void> _initialize;
@@ -87,8 +87,6 @@ class CalendarManager with ChangeNotifier {
         await _saveToStorage(memoryCache);
       }
     } catch (_) {
-      // todo
-      return;
     }
 
     _calendarMap[key] = memoryCache;

@@ -12,7 +12,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Consumer2<CalendarManager, CalendarFilterOption>(
         builder: (context, manager, op, _) {
       final calendarRes = manager.getCalendarResponse(manager.currentDate);
-      final actions = (calendarRes != null)
+      final actions = (calendarRes != null && calendarRes.actors.length > 0)
           ? <Widget>[
               IconButton(
                 icon: Icon(Icons.filter_list),
