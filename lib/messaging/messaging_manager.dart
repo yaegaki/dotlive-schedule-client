@@ -31,17 +31,26 @@ class MessagingManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> subscribeAllTopic() async {
-    if (!_hasPermissions) {
-      throw Exception('does not have permissions');
-    }
-
+  Future<List<Topic>> getTopics() async {
     final res = await http.post('$baseURL/api/topic', body: {
       't': _token,
     });
 
-    final futures = (jsonDecode(res.body) as List<dynamic>)
+    return (jsonDecode(res.body) as List<dynamic>)
         .map((json) => Topic.fromJSON(json))
+        .toList();
+  }
+
+  Future<void> subscribeTopic(String topicName) async {
+    await _firebaseMessaging.subscribeToTopic(topicName);
+  }
+
+  Future<void> unsubscribeTopic(String topicName) async {
+    await _firebaseMessaging.unsubscribeFromTopic(topicName);
+  }
+
+  Future<void> subscribeAllTopic() async {
+    final futures = (await getTopics())
         // .map((t) {
         //   print('${t.displayName}:${t.name}:${t.subscribed}');
         //   return t;
