@@ -54,6 +54,21 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
       return Center(child: CircularProgressIndicator());
     }
 
+    if (!manager.hasPermissions) {
+      final themeData = Theme.of(context);
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('通知設定が無効になっています', style: themeData.textTheme.headline6),
+            Text('設定から通知設定を有効にしてリトライしてください', style: themeData.textTheme.bodyText1),
+            RaisedButton(
+                onPressed: () => _getTopics(manager), child: Text('リトライ')),
+          ],
+        ),
+      );
+    }
+
     return SafeArea(
         child: ListView(children: <Widget>[
       _buildPlanTile(context, manager),
@@ -68,6 +83,14 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
     });
 
     try {
+      await manager.requestNotificationPermissions();
+      if (!manager.hasPermissions) {
+        setState(() {
+          _isInitialized = true;
+        });
+        return;
+      }
+
       final topics = await manager.getTopics();
       setState(() {
         _actorTopics = <Topic>[];

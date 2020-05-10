@@ -16,18 +16,20 @@ class MessagingManager extends ChangeNotifier {
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   Future<void> init() async {
-    _hasPermissions = await _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-    if (_hasPermissions == null) _hasPermissions = true;
-    if (_hasPermissions) {
-      _token = await _firebaseMessaging.getToken();
-    }
+    await requestNotificationPermissions();
 
     _firebaseMessaging.onTokenRefresh.listen((token) {
       _token = token;
       notifyListeners();
     });
+  }
 
+  Future<void> requestNotificationPermissions() async {
+    _hasPermissions = await _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    if (_hasPermissions == null) _hasPermissions = true;
+    // パーミッションに関わらずトークンは取得できる
+    _token = await _firebaseMessaging.getToken();
     notifyListeners();
   }
 
