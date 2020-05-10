@@ -39,8 +39,10 @@ class AppInitializer extends ChangeNotifier {
     try {
       final version = _sharedPrefs.getString(_versionKey);
       if (version == null) {
-        // 初回起動時はトピックを全て購読する
-        await _messagingManager.subscribeAllTopic();
+        if (messagingManager.hasPermissions) {
+          // 初回起動時はトピックを全て購読する
+          await _messagingManager.subscribeAllTopic();
+        }
       } else if (version != _currentVersion) {
         // todo: 新機能の告知など
       }
