@@ -150,8 +150,8 @@ class CalendarView extends StatelessWidget {
       }
 
       final bottomWidgets = <Widget>[];
-      final bottomWidgetTextStyle = TextStyle(
-                      color: Theme.of(context).hintColor, fontSize: 10);
+      final bottomWidgetTextStyle =
+          TextStyle(color: Theme.of(context).hintColor, fontSize: 10);
       // フィルターされた数表示
       if (filtered > 0) {
         bottomWidgets.add(Align(
@@ -176,8 +176,7 @@ class CalendarView extends StatelessWidget {
             alignment: Alignment.bottomRight,
             child: Text(
               '+${actorIcons.length - 4}',
-              style:
-                  bottomWidgetTextStyle,
+              style: bottomWidgetTextStyle,
             )));
       }
 
@@ -205,8 +204,7 @@ class CalendarView extends StatelessWidget {
               padding: EdgeInsets.zero,
               onPressed: () => _showSchedulePage(context, day, scheduleManager),
               child: Container(
-                  color: backgroundColor,
-                  child: Column(children: children))),
+                  color: backgroundColor, child: Column(children: children))),
         ),
       );
     });
