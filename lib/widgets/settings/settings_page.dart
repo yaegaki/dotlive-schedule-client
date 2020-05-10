@@ -1,5 +1,6 @@
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/constants.dart';
+import 'package:dotlive_schedule/initialize/app_initializer.dart';
 import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:dotlive_schedule/widgets/settings/settings_cache_page.dart';
 import 'package:dotlive_schedule/widgets/settings/settings_notification_page.dart';
@@ -25,6 +26,15 @@ class _SettingsPageState extends State<SettingsPage> {
       }),
       _buildTile(Icons.help, 'ヘルプ', () {
         launch('$baseURL/help');
+      }),
+      _buildTile(Icons.info, 'ライセンス', () {
+        final packageInfo =
+            Provider.of<AppInitializer>(context, listen: false).packageInfo;
+        showLicensePage(
+            context: context,
+            // packageInfo.appNameはホームで表示する用の短い名前になっているので直接指定する
+            applicationName: 'どっとライブ スケジュール',
+            applicationVersion: packageInfo.version);
       }),
     ]);
   }
