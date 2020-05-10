@@ -52,7 +52,6 @@ class AppInitializer extends ChangeNotifier {
       } else if (version != _packageInfo.version) {
         // todo: 新機能の告知など
       }
-      print(_packageInfo.version);
 
       if (version != _packageInfo.version) {
         await _sharedPrefs.setString(_versionKey, _packageInfo.version);
