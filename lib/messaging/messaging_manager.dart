@@ -91,17 +91,28 @@ class MessagingManager extends ChangeNotifier {
   }
 
   Future<void> _onMessage(Map<String, dynamic> msg, bool silent) async {
-    print(msg);
-    final notification = msg['notification'] as Map<dynamic, dynamic>;
-    if (notification == null) return;
-    final title = notification['title'] as String;
-    final body = notification['body'] as String;
-    if (title == null || body == null) return;
+    String title, body, payload;
 
-    final data = msg['data'] as Map<dynamic, dynamic>;
-    if (data == null) return;
-    final payload = data['date'] as String;
-    if (payload == null) return;
+    final notification = msg['notification'] as Map<dynamic, dynamic>;
+    if (notification != null) {
+      title = notification['title'];
+      body = notification['body'];
+
+      final data = msg['data'] as Map<dynamic, dynamic>;
+      if (data == null) return;
+      payload = data['date'];
+    } else {
+      final aps = msg['aps'] as Map<dynamic, dynamic>;
+      if (aps == null) return;
+      final alert = aps['alert'] as Map<dynamic, dynamic>;
+      if (alert == null) return;
+
+      title = alert['title'];
+      body = alert['body'];
+      payload = msg['date'];
+    }
+
+    if (title == null || body == null || payload == null) return;
 
     if (silent) {
       _lastReceivedMessage = Message(payload);
