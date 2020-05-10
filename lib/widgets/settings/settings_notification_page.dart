@@ -122,7 +122,7 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
             subscribeOrUnsubscribeTopic(context, manager, _planTopic);
           },
           value: _planTopic.subscribed),
-      subtitle: Text('明日のスケジュールが決定されたときに通知されます'),
+      subtitle: Text('翌日のスケジュールが通知されます'),
       isThreeLine: true,
     ));
   }
@@ -131,7 +131,7 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
     final children = <Widget>[
       ListTile(
         title: Text('配信', style: Theme.of(context).textTheme.headline6),
-        subtitle: Text('配信が開始された時間に通知されます'),
+        subtitle: Text('動画の投稿及びライブの開始時に通知されます'),
         isThreeLine: true,
       )
     ];
