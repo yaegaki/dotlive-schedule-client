@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dotlive_schedule/common/constants.dart';
 import 'package:dotlive_schedule/messaging/topic.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
 class MessagingManager extends ChangeNotifier {
@@ -13,15 +15,40 @@ class MessagingManager extends ChangeNotifier {
   String _token;
   String get token => _token;
 
+  final Random _rand = Random();
+
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin get flutterLocalNotificationsPlugin =>
+      _flutterLocalNotificationsPlugin;
+
+  Message _lastReceivedMessage;
+  Message get lastReceivedMessage => _lastReceivedMessage;
 
   Future<void> init() async {
     await requestNotificationPermissions();
+
+    await _flutterLocalNotificationsPlugin.initialize(
+        InitializationSettings(
+          AndroidInitializationSettings('ic_launcher_foreground'),
+          IOSInitializationSettings(),
+        ), onSelectNotification: (s) {
+      _lastReceivedMessage = Message(s);
+      notifyListeners();
+      return null;
+    });
 
     _firebaseMessaging.onTokenRefresh.listen((token) {
       _token = token;
       notifyListeners();
     });
+
+    _firebaseMessaging.configure(
+      onLaunch: (msg) => _onMessage(msg, true),
+      onResume: (msg) => _onMessage(msg, true),
+      onMessage: (msg) => _onMessage(msg, false),
+    );
   }
 
   Future<void> requestNotificationPermissions() async {
@@ -62,4 +89,38 @@ class MessagingManager extends ChangeNotifier {
 
     await Future.wait(futures);
   }
+
+  Future<void> _onMessage(Map<String, dynamic> msg, bool silent) async {
+    print(msg);
+    final notification = msg['notification'] as Map<dynamic, dynamic>;
+    if (notification == null) return;
+    final title = notification['title'] as String;
+    final body = notification['body'] as String;
+    if (title == null || body == null) return;
+
+    final data = msg['data'] as Map<dynamic, dynamic>;
+    if (data == null) return;
+    final payload = data['date'] as String;
+    if (payload == null) return;
+
+    if (silent) {
+      _lastReceivedMessage = Message(payload);
+      notifyListeners();
+      return;
+    }
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'fcm_fallback_notification_channel', '通知', '通知');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    final id = DateTime.now().toString().hashCode + _rand.nextInt(10000);
+    await _flutterLocalNotificationsPlugin
+        .show(id, title, body, platformChannelSpecifics, payload: payload);
+  }
+}
+
+class Message {
+  final String data;
+  Message(this.data);
 }

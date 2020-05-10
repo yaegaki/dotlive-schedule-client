@@ -1,5 +1,6 @@
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:dotlive_schedule/schedule/schedule_manager.dart';
 import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_app_bar.dart';
@@ -65,56 +66,58 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
     }
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ScheduleManager>(
-          create: (_) => ScheduleManager(_startDate),
-        ),
-        ChangeNotifierProvider<ScheduleSortOption>(
-          create: (_) => ScheduleSortOption(),
-        ),
-        ChangeNotifierProvider<CalendarManager>(
-          create: (_) => CalendarManager(_startDate),
-        ),
-        ChangeNotifierProvider<CalendarFilterOption>(
-          create: (_) => CalendarFilterOption(),
-        ),
-      ],
-      child: Scaffold(
-        appBar: appBar,
-        drawer: drawer,
-        body: child,
-        bottomNavigationBar: FFNavigationBar(
-          theme: FFNavigationBarTheme(
-            barBackgroundColor: themeData.canvasColor,
-            selectedItemBackgroundColor: selectedItemColor,
-            selectedItemIconColor: themeData.canvasColor,
-            selectedItemBorderColor: themeData.canvasColor,
-            selectedItemLabelColor: selectedItemColor,
-            showSelectedItemShadow: false,
+    return Consumer<MessagingManager>(builder: (context, messagingManager, _) {
+      return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ScheduleManager>(
+            create: (_) => ScheduleManager(messagingManager, _startDate),
           ),
-          selectedIndex: _selectedIndex,
-          onSelectTab: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          items: [
-            FFNavigationBarItem(
-              iconData: Icons.bookmark,
-              label: 'スケジュール',
+          ChangeNotifierProvider<ScheduleSortOption>(
+            create: (_) => ScheduleSortOption(),
+          ),
+          ChangeNotifierProvider<CalendarManager>(
+            create: (_) => CalendarManager(_startDate),
+          ),
+          ChangeNotifierProvider<CalendarFilterOption>(
+            create: (_) => CalendarFilterOption(),
+          ),
+        ],
+        child: Scaffold(
+          appBar: appBar,
+          drawer: drawer,
+          body: child,
+          bottomNavigationBar: FFNavigationBar(
+            theme: FFNavigationBarTheme(
+              barBackgroundColor: themeData.canvasColor,
+              selectedItemBackgroundColor: selectedItemColor,
+              selectedItemIconColor: themeData.canvasColor,
+              selectedItemBorderColor: themeData.canvasColor,
+              selectedItemLabelColor: selectedItemColor,
+              showSelectedItemShadow: false,
             ),
-            FFNavigationBarItem(
-              iconData: Icons.calendar_today,
-              label: 'カレンダー',
-            ),
-            FFNavigationBarItem(
-              iconData: Icons.settings,
-              label: '設定',
-            )
-          ],
+            selectedIndex: _selectedIndex,
+            onSelectTab: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            items: [
+              FFNavigationBarItem(
+                iconData: Icons.bookmark,
+                label: 'スケジュール',
+              ),
+              FFNavigationBarItem(
+                iconData: Icons.calendar_today,
+                label: 'カレンダー',
+              ),
+              FFNavigationBarItem(
+                iconData: Icons.settings,
+                label: '設定',
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
