@@ -37,6 +37,7 @@ class _SchedulePageState extends State<SchedulePage> {
   void dispose() {
     super.dispose();
 
+    _pageController?.dispose();
     _manager.removeListener(_managerListener);
   }
 

@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class CalendarManager with ChangeNotifier {
+  static final DateTimeJST calendarBeginDate = DateTimeJST.jst(2020, 3);
+
   static const _calendarCacheKeyPrefix = 'calendar';
   SharedPreferences _sharedPrefs;
 
@@ -110,8 +112,7 @@ class CalendarManager with ChangeNotifier {
         if (cache.date.year == date.year && cache.date.month == date.month) {
           return cache;
         }
-      } catch (_) {
-      }
+      } catch (_) {}
 
       // エラーが出たor古い場合は消す
       await _sharedPrefs.remove(key);

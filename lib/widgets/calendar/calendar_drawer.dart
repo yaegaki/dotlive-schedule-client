@@ -6,15 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CalendarDrawer extends StatelessWidget {
-  static final DateTimeJST _calendarBeginDate = DateTimeJST.jst(2020, 3);
-
   Widget build(BuildContext context) {
     final manager = Provider.of<CalendarManager>(context, listen: false);
     var children = <Widget>[];
     final now = DateTimeJST.now();
 
-    var date =
-        DateTimeJST.jst(_calendarBeginDate.year, _calendarBeginDate.month);
+    var date = DateTimeJST.fromYM(CalendarManager.calendarBeginDate);
     const month = Duration(days: 32);
     var initialIndex = 0;
     for (var i = 0; date.before(now); i++) {
@@ -33,8 +30,7 @@ class CalendarDrawer extends StatelessWidget {
         initialIndex = i;
       }
 
-      date = _date.add(month);
-      date = DateTimeJST.jst(date.year, date.month);
+      date = DateTimeJST.fromYM(_date.add(month));
     }
 
     children = children.reversed.toList();
@@ -53,7 +49,7 @@ class CalendarDrawer extends StatelessWidget {
           Expanded(
             child: ScrollablePositionedList.builder(
                 initialScrollIndex: initialIndex,
-                // todo: 
+                // todo:
                 // initialAlignmentを設定しないとバウンスしてしまう
                 // しかし要素が少なすぎるときに設定するとアサートに引っ掛かってしまう
                 // https://github.com/google/flutter.widgets/issues/38

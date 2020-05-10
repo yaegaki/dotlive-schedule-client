@@ -1,3 +1,4 @@
+import 'package:dotlive_schedule/calendar/calendar.dart';
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_filter_option.dart';
@@ -10,7 +11,8 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Consumer2<CalendarManager, CalendarFilterOption>(
         builder: (context, manager, op, _) {
-      final actions = op.enabled
+      final calendarRes = manager.getCalendarResponse(manager.currentDate);
+      final actions = (calendarRes != null)
           ? <Widget>[
               IconButton(
                 icon: Icon(Icons.filter_list),
@@ -21,7 +23,8 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                       builder: (context) {
                         Set<String> filters = op.filters.toSet();
                         return StatefulBuilder(builder: (context, setState) {
-                          return _buildDialog(context, op, filters, setState);
+                          return _buildDialog(context, op, calendarRes.actors,
+                              filters, setState);
                         });
                       });
                 },
@@ -44,8 +47,8 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildDialog(BuildContext context, CalendarFilterOption op,
-      Set<String> filters, StateSetter setState) {
-    final switches = op.actors
+      List<CalendarActor> actors, Set<String> filters, StateSetter setState) {
+    final switches = actors
         .map((actor) => SwitchListTile(
             onChanged: (v) {
               setState(() {
@@ -79,7 +82,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                   onPressed: () {
                     setState(() {
                       filters.clear();
-                      filters.addAll(op.actors.map((a) => a.id));
+                      filters.addAll(actors.map((a) => a.id));
                     });
                   },
                   shape: StadiumBorder(),

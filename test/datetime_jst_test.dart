@@ -30,6 +30,21 @@ void main() {
       expect(t3.differenceDay(t2), 1);
     });
 
+    test("differenceMonth", () {
+      final t1 = DateTimeJST.jst(2020, 4, 1, 0, 0);
+      final t2 = DateTimeJST.jst(2020, 4, 1, 23, 59);
+      final t3 = DateTimeJST.jst(2020, 4, 2, 0, 0);
+      final t4 = DateTimeJST.jst(2020, 4, 30, 0, 0);
+      final t5 = DateTimeJST.jst(2020, 5, 1, 0, 0);
+      expect(t1.differenceMonth(t1), 0);
+      expect(t2.differenceMonth(t1), 0);
+      expect(t3.differenceMonth(t2), 0);
+      expect(t4.differenceMonth(t1), 0);
+      expect(t5.differenceMonth(t1), 1);
+      expect(t5.differenceMonth(t4), 1);
+      expect(t1.differenceMonth(t5), -1);
+    });
+
     test("weekday", () {
       final t1 = DateTimeJST.jst(2020, 5, 1);
       // DateTime.friday == 5
