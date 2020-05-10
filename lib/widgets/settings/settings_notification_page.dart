@@ -61,7 +61,8 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('通知設定が無効になっています', style: themeData.textTheme.headline6),
-            Text('設定から通知設定を有効にしてリトライしてください', style: themeData.textTheme.bodyText1),
+            Text('設定から通知設定を有効にしてリトライしてください',
+                style: themeData.textTheme.bodyText1),
             RaisedButton(
                 onPressed: () => _getTopics(manager), child: Text('リトライ')),
           ],
@@ -69,11 +70,10 @@ class _SettingsNotificationPageState extends State<SettingsNotificationPage> {
       );
     }
 
-    return SafeArea(
-        child: ListView(children: <Widget>[
+    return ListView(padding: MediaQuery.of(context).padding, children: <Widget>[
       _buildPlanTile(context, manager),
       _buildActorsTile(context, manager),
-    ]));
+    ]);
   }
 
   Future<void> _getTopics(MessagingManager manager) async {
