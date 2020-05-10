@@ -1,12 +1,15 @@
 import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:flutter/widgets.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppInitializer extends ChangeNotifier {
-  static final String _currentVersion = '1.0.0';
   static final String _versionKey = 'version';
 
   SharedPreferences _sharedPrefs;
+
+  PackageInfo _packageInfo;
+  PackageInfo get packageInfo => _packageInfo;
 
   MessagingManager _messagingManager = MessagingManager();
   MessagingManager get messagingManager => _messagingManager;
@@ -27,6 +30,9 @@ class AppInitializer extends ChangeNotifier {
       (() async {
         _sharedPrefs = await SharedPreferences.getInstance();
       })(),
+      (() async {
+        _packageInfo = await PackageInfo.fromPlatform();
+      })(),
     ]);
 
     await reinit();
@@ -43,12 +49,13 @@ class AppInitializer extends ChangeNotifier {
           // 初回起動時はトピックを全て購読する
           await _messagingManager.subscribeAllTopic();
         }
-      } else if (version != _currentVersion) {
+      } else if (version != _packageInfo.version) {
         // todo: 新機能の告知など
       }
+      print(_packageInfo.version);
 
-      if (version != _currentVersion) {
-        await _sharedPrefs.setString(_versionKey, _currentVersion);
+      if (version != _packageInfo.version) {
+        await _sharedPrefs.setString(_versionKey, _packageInfo.version);
       }
       _initialized = true;
     } catch (_) {
