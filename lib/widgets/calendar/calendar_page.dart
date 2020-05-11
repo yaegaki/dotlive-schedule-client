@@ -1,4 +1,5 @@
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
+import 'package:dotlive_schedule/common/constants.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/widgets/calendar/calendar_view.dart';
 import 'package:flutter/material.dart';
@@ -47,11 +48,14 @@ class _CalendarPageState extends State<CalendarPage> {
               return Center(child: CircularProgressIndicator());
             }
 
+            final padding = MediaQuery.of(context).padding.copyWith(bottom: defaultBottomMargin);
+
             return LayoutBuilder(builder: (context, constraints) {
               return RefreshIndicator(
                 onRefresh: () =>
                     manager.fetchCalendar(manager.currentDate, true),
                 child: SingleChildScrollView(
+                    padding: padding,
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: ConstrainedBox(
                       constraints:

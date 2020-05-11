@@ -9,23 +9,26 @@ class SettingsCachePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('キャッシュ')),
       body: Consumer<CalendarManager>(builder: (context, manager, _) {
-        return Card(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              title:
-                  Text('キャッシュ削除', style: Theme.of(context).textTheme.headline6),
-              subtitle: Text(
-                  'アプリで使用されているキャッシュを削除します\n表示がおかしくなった場合などに削除すると改善される可能性があります'),
-            ),
-            RaisedButton(
-                child: Text('削除'),
-                onPressed: () {
-                  _clearCache(context, manager);
-                }),
-          ],
-        ));
+        return SingleChildScrollView(
+          padding: MediaQuery.of(context).padding,
+          child: Card(
+              child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text('キャッシュ削除',
+                    style: Theme.of(context).textTheme.headline6),
+                subtitle: Text(
+                    'アプリで使用されているキャッシュを削除します\n表示がおかしくなった場合などに削除すると改善される可能性があります'),
+              ),
+              RaisedButton(
+                  child: Text('削除'),
+                  onPressed: () {
+                    _clearCache(context, manager);
+                  }),
+            ],
+          )),
+        );
       }),
     );
   }

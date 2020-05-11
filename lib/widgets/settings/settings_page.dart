@@ -17,7 +17,9 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return ListView(children: <Widget>[
+    final padding =
+        MediaQuery.of(context).padding.copyWith(bottom: defaultBottomMargin);
+    return ListView(padding: padding, children: <Widget>[
       _buildTile(Icons.notifications, '通知設定', () {
         _showNotificationPage(context);
       }),

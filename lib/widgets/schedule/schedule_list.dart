@@ -1,3 +1,4 @@
+import 'package:dotlive_schedule/common/constants.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/schedule/schedule.dart';
 import 'package:dotlive_schedule/schedule/schedule_manager.dart';
@@ -32,9 +33,15 @@ class ScheduleList extends StatelessWidget {
         }
 
         final buildListView = (bool asc) {
+          final existsBottomBar = canControl;
+          var padding = MediaQuery.of(context).padding;
+          if (existsBottomBar) {
+            padding = padding.copyWith(bottom: defaultBottomMargin);
+          }
+
           return ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: padding,
             itemBuilder: (_, index) {
               if (schedule.hasError) {
                 return _buildTextCard('エラーが発生しました');
