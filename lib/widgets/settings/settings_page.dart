@@ -34,8 +34,6 @@ class _SettingsPageState extends State<SettingsPage> {
             Provider.of<AppInitializer>(context, listen: false).packageInfo;
         showLicensePage(
             context: context,
-            // packageInfo.appNameはホームで表示する用の短い名前になっているので直接指定する
-            applicationName: 'どっとライブ スケジュール',
             applicationVersion: packageInfo.version);
       }),
     ]);
