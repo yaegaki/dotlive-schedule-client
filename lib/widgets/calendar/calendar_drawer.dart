@@ -49,7 +49,7 @@ class CalendarDrawer extends StatelessWidget {
             constraints: BoxConstraints.tightFor(height: 80 + padding.top),
           child: DrawerHeader(
             padding: EdgeInsets.fromLTRB(headerPaddingLeft, 16.0, 16.0, 8.0),
-            child: Text('表する月を選択'),
+            child: Text('表示する月を選択'),
           )),
           Expanded(
             child: ScrollablePositionedList.builder(
