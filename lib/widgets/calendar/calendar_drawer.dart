@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,7 @@ class CalendarDrawer extends StatelessWidget {
     initialIndex = children.length - initialIndex - 1;
 
     final padding = MediaQuery.of(context).padding;
+    final headerPaddingLeft = max(padding.left, 16.0);
 
     return Drawer(
       child: Column(
@@ -45,7 +48,7 @@ class CalendarDrawer extends StatelessWidget {
           ConstrainedBox(
             constraints: BoxConstraints.tightFor(height: 80 + padding.top),
           child: DrawerHeader(
-            padding: EdgeInsets.fromLTRB(16.0 + padding.left, 16.0, 16.0, 8.0),
+            padding: EdgeInsets.fromLTRB(headerPaddingLeft, 16.0, 16.0, 8.0),
             child: Text('表する月を選択'),
           )),
           Expanded(
