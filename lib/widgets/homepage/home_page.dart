@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
             create: (_) => ScheduleSortOption(),
           ),
           ChangeNotifierProvider<CalendarManager>(
-            create: (_) => CalendarManager(_startDate),
+            create: (_) => CalendarManager(messagingManager, _startDate),
           ),
           ChangeNotifierProvider<CalendarFilterOption>(
             create: (_) => CalendarFilterOption(),

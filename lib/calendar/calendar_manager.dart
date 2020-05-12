@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:dotlive_schedule/calendar/calendar.dart';
 import 'package:dotlive_schedule/common/constants.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
+import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,7 @@ class CalendarManager with ChangeNotifier {
 
   static const _calendarCacheKeyPrefix = 'calendar';
   SharedPreferences _sharedPrefs;
+  final MessagingManager _messagingManager;
 
   List<CalendarActor> _actors = [];
   final Map<String, _CalendarCache> _calendarMap =
@@ -20,14 +22,18 @@ class CalendarManager with ChangeNotifier {
   Future<void> _initialize;
   DateTimeJST _currentDate;
   DateTimeJST get currentDate => _currentDate;
+  Message _lastReceivedMessage;
 
-  CalendarManager(DateTimeJST _currentDate)
+  CalendarManager(this._messagingManager, DateTimeJST _currentDate)
       : this._currentDate =
-            DateTimeJST.jst(_currentDate.year, _currentDate.month) {
+            _messagingManager.getDateFromLastReceivedMessage() ??
+                DateTimeJST.jst(_currentDate.year, _currentDate.month) {
     _initialize = _init();
     _initialize.then((_) {
       fetchCalendar(this._currentDate, false);
     });
+
+    _messagingManager.addListener(_onMessagingManagerChanged);
   }
 
   CalendarResponse getCalendarResponse(DateTimeJST date) {
@@ -37,11 +43,11 @@ class CalendarManager with ChangeNotifier {
     return CalendarResponse(cache.toCalendar(), _actors);
   }
 
-  void setCurrentDate(DateTimeJST date) {
+  void setCurrentDate(DateTimeJST date, {bool reload = false}) {
     _currentDate = DateTimeJST.jst(date.year, date.month);
     notifyListeners();
 
-    fetchCalendar(_currentDate, false);
+    fetchCalendar(_currentDate, reload);
   }
 
   Future<void> fetchCalendar(DateTimeJST date, bool reload) async {
@@ -86,8 +92,7 @@ class CalendarManager with ChangeNotifier {
       if (prevFixedDay != memoryCache.fixedDay) {
         await _saveToStorage(memoryCache);
       }
-    } catch (_) {
-    }
+    } catch (_) {}
 
     _calendarMap[key] = memoryCache;
     notifyListeners();
@@ -143,6 +148,24 @@ class CalendarManager with ChangeNotifier {
     }
     _calendarMap.clear();
     notifyListeners();
+  }
+
+  void _onMessagingManagerChanged() {
+    if (_lastReceivedMessage == _messagingManager.lastReceivedMessage) {
+      return;
+    }
+
+    final date = _messagingManager.getDateFromLastReceivedMessage();
+    if (date == null) return;
+
+    setCurrentDate(date, reload: true);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _messagingManager.removeListener(_onMessagingManagerChanged);
   }
 }
 

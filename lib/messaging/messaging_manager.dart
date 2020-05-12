@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dotlive_schedule/common/constants.dart';
+import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/messaging/topic.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
@@ -88,6 +89,19 @@ class MessagingManager extends ChangeNotifier {
         .map((t) => _firebaseMessaging.subscribeToTopic(t.name));
 
     await Future.wait(futures);
+  }
+
+  DateTimeJST getDateFromLastReceivedMessage () {
+    final data = _lastReceivedMessage?.data;
+    if (data == null) return null;
+
+    final xs = data.split('-');
+    if (xs.length != 3) return null;
+    final year = int.tryParse(xs[0]);
+    final month = int.tryParse(xs[1]);
+    final day = int.tryParse(xs[2]);
+    if (year == null || month == null || day == null) return null;
+    return DateTimeJST.jst(year, month, day);
   }
 
   Future<void> _onMessage(Map<String, dynamic> msg, bool silent) async {
