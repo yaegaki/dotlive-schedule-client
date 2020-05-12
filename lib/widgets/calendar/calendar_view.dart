@@ -224,10 +224,12 @@ class CalendarView extends StatelessWidget {
             child: Container(
                 // circleAvatarにボーダーをつけるために二重にする
                 child: CircleAvatar(
+              maxRadius: 1000,
               backgroundColor: Colors.black,
               child: Container(
                 padding: EdgeInsets.all(1),
                 child: CircleAvatar(
+                  maxRadius: 1000,
                   backgroundImage: NetworkImage(url),
                 ),
               ),
