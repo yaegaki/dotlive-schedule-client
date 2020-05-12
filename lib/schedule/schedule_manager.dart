@@ -21,11 +21,11 @@ class ScheduleManager with ChangeNotifier {
     _messagingManager.addListener(_onMessagingManagerChanged);
   }
 
-  void setCurrentDate(DateTimeJST date) {
+  void setCurrentDate(DateTimeJST date, { bool reload = false }) {
     _currentDate = date;
     notifyListeners();
 
-    fetchSchedule(date, false);
+    fetchSchedule(date, reload);
   }
 
   Schedule getSchedule(DateTimeJST date) {
@@ -86,7 +86,7 @@ class ScheduleManager with ChangeNotifier {
 
     final date = _getDateFromMessagingManager();
     if (date == null) return;
-    setCurrentDate(date);
+    setCurrentDate(date, reload: true);
   }
 
   @override
