@@ -36,16 +36,18 @@ class CalendarDrawer extends StatelessWidget {
     children = children.reversed.toList();
     initialIndex = children.length - initialIndex - 1;
 
+    final padding = MediaQuery.of(context).padding;
+
     return Drawer(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            height: 80,
-            child: DrawerHeader(
-              child: Text('表示する月を選択'),
-            ),
-          ),
+          ConstrainedBox(
+            constraints: BoxConstraints.tightFor(height: 80 + padding.top),
+          child: DrawerHeader(
+            padding: EdgeInsets.fromLTRB(16.0 + padding.left, 16.0, 16.0, 8.0),
+            child: Text('表する月を選択'),
+          )),
           Expanded(
             child: ScrollablePositionedList.builder(
                 initialScrollIndex: initialIndex,
