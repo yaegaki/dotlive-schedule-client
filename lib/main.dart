@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     const darkAccentColor = Color(0xff00a3ef);
 
     return MaterialApp(
-      title: 'DotliveSchedule',
+      title: '.スケジュール',
       theme: ThemeData(
         primarySwatch: primaryColorSwatch,
       ),
