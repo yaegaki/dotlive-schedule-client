@@ -1,16 +1,31 @@
-# dotlive_schedule
+# dotlive-schedule-client
 
-A new Flutter project.
+[.スケジュール](https://apps.apple.com/jp/app/%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB/id1512712289?mt=8)のクライアント  
+https://dotlive-schedule.appspot.com/
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+サーバー:[yaegaki/dotlive-schedule-server](https://github.com/yaegaki/dotlive-schedule-server)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## ビルド方法 
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+firebaseのコンソールからAndroid用とiOS用に`google-services.json`と`GooogleService-Info.plist`を取得する。  
+取得したファイルをそれぞれ以下の場所に配置する。
+
+```sh
+# google-services.json
+android\app
+
+# GoogleService-Info.plist
+ios\Runner
+```
+
+デフォルトでは`https://dotlive-schedule.appspot.com`に接続するようになっているので他のサーバーに接続したい場合は`lib\constants.dart`を書き換える。
+
+```patch
+- const baseURL = "https://dotlive-schedule.appspot.com";
++ const baseURL = "http://localhost:8080";
+```
+
+
+後は`flutter build`でビルドできる。
