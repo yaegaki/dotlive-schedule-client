@@ -4,6 +4,7 @@ import 'package:dotlive_schedule/schedule/schedule_sort_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final DateTimeJST targetDate;
@@ -12,27 +13,44 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (targetDate != null) {
-      return AppBar(title: Text(_createTitle(targetDate)));
-    }
+    final hasTargetDate = targetDate != null;
 
-    final manager = Provider.of<ScheduleManager>(context, listen: false);
-
-    return Selector<ScheduleManager, DateTimeJST>(
-      selector: (_, m) => m.currentDate,
-      builder: (_, d, child) {
-        final action = _isToday(d)
-            ? null
-            : IconButton(
+    return Consumer<ScheduleManager>(
+      builder: (_, m, child) {
+        final d = hasTargetDate ? targetDate : m.currentDate;
+        List<Widget> actions;
+        if (!hasTargetDate && !_isToday(d)) {
+          actions = [
+            IconButton(
                 icon: Icon(Icons.calendar_today),
-                onPressed: () => manager.setCurrentDate(DateTimeJST.now()));
+                onPressed: () => m.setCurrentDate(DateTimeJST.now()))
+          ];
+        }
+
+        final schedule = m.getSchedule(d);
+        if (schedule != null &&
+            schedule.tweetId != null &&
+            schedule.tweetId.isNotEmpty) {
+          actions = actions == null ? [] : actions;
+          final tweetId = schedule.tweetId;
+          actions.add(IconButton(
+              icon: Icon(Icons.info),
+              onPressed: () async {
+                final tweetURL =
+                    "https://twitter.com/dotLIVEyoutuber/status/$tweetId";
+                if (await canLaunch(tweetURL)) {
+                  await launch(tweetURL, forceSafariVC: false);
+                }
+              }));
+        }
+
         return AppBar(
           title: Text(_createTitle(d)),
           leading: child,
-          actions: action == null ? null : [action],
+          actions: actions,
         );
       },
-      child: Consumer<ScheduleSortOption>(builder: (_, op, __) {
+      child: hasTargetDate ? null : Consumer<ScheduleSortOption>(builder: (_, op, __) {
         return Transform(
             alignment: Alignment.center,
             transform: Matrix4.diagonal3Values(1.0, op.asc ? -1.0 : 1.0, 1.0),

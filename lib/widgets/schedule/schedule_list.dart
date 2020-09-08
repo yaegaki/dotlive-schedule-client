@@ -89,8 +89,13 @@ class ScheduleList extends StatelessWidget {
     final diff = d.differenceDay(baseDate);
     final hour = diff > 0 ? diff * 24 + d.hour : d.hour;
 
-    final title =
+    var title =
         '${hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}~ ${entry.actorName}';
+
+    if (!entry.isYoutube) {
+      title = '$title (${entry.source})';
+    }
+
     final icon = entry.icon;
 
     String body;
