@@ -24,7 +24,7 @@ ios\Runner
 
 ```patch
 - const baseURL = "https://dotlive-schedule.appspot.com";
-+ const baseURL = "http://localhost:8080";
++ const baseURL = "http://xxx.xxx.xxx.xxx:8080";
 ```
 
 
