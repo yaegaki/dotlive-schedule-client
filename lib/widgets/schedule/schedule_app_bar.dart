@@ -39,7 +39,7 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
                 final tweetURL =
                     "https://twitter.com/dotLIVEyoutuber/status/$tweetId";
                 if (await canLaunch(tweetURL)) {
-                  await launch(tweetURL, forceSafariVC: false);
+                  await launch(tweetURL, forceSafariVC: true);
                 }
               }));
         }
