@@ -34,7 +34,7 @@ class ScheduleAppBar extends StatelessWidget implements PreferredSizeWidget {
           actions = actions == null ? [] : actions;
           final tweetId = schedule.tweetId;
           actions.add(IconButton(
-              icon: Icon(Icons.info),
+              icon: Icon(Icons.info_outline),
               onPressed: () async {
                 final tweetURL =
                     "https://twitter.com/dotLIVEyoutuber/status/$tweetId";
