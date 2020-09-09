@@ -92,8 +92,8 @@ class ScheduleList extends StatelessWidget {
     var title =
         '${hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}~ ${entry.actorName}';
 
-    if (!entry.isYoutube) {
-      title = '$title (${entry.source})';
+    if (entry.note != null && entry.note.isNotEmpty) {
+      title = '$title${entry.note}';
     }
 
     final icon = entry.icon;

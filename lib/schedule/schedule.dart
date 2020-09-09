@@ -27,6 +27,7 @@ class Schedule {
 
 class ScheduleEntry {
   final String actorName;
+  final String note;
   final String icon;
   final DateTimeJST startAt;
   final String videoId;
@@ -36,15 +37,12 @@ class ScheduleEntry {
   final bool isLive;
   final String text;
 
-  bool get isYoutube {
-    return source == "Youtube";
-  }
-
-  ScheduleEntry(this.actorName, this.icon, this.startAt, this.videoId, this.url,
+  ScheduleEntry(this.actorName, this.note, this.icon, this.startAt, this.videoId, this.url,
       this.source, this.planned, this.isLive, this.text);
 
   ScheduleEntry.fromJSON(Map<String, dynamic> json)
       : actorName = json['actorName'],
+        note = json['note'],
         icon = json['icon'],
         startAt = DateTimeJST.parse(json['startAt']),
         videoId = json['videoId'],
