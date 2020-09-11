@@ -4,6 +4,7 @@ import 'package:dotlive_schedule/initialize/app_initializer.dart';
 import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:dotlive_schedule/widgets/settings/settings_cache_page.dart';
 import 'package:dotlive_schedule/widgets/settings/settings_notification_page.dart';
+import 'package:dotlive_schedule/widgets/settings/settings_widget_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,9 @@ class _SettingsPageState extends State<SettingsPage> {
       }),
       _buildTile(Icons.cached, 'キャッシュ', () {
         _showCachePage(context);
+      }),
+      _buildTile(Icons.help, 'ウィジェット', () {
+        _showWidgetPage(context);
       }),
       _buildTile(Icons.help, 'ヘルプ', () {
         launch('$baseURL/help');
@@ -60,6 +64,10 @@ class _SettingsPageState extends State<SettingsPage> {
         child: SettingsNotificationPage(),
       );
     }));
+  }
+
+  void _showWidgetPage(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettingsWidgetPage()));
   }
 
   void _showCachePage(BuildContext context) {
