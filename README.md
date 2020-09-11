@@ -29,3 +29,21 @@ ios\Runner
 
 
 後は`flutter build`でビルドできる。
+
+## リリース時作業
+
+### スクリーンショット撮影
+
+以下のコマンドでステータスバーを変更して撮影する。  
+
+```sh
+$ xcrun simctl status_bar "iPhone 8 Plus" override \
+  --time "0:46" \
+  --dataNetwork 4g \
+  --wifiMode active \
+  --wifiBars 3 \
+  --cellularMode active \
+  --cellularBars 4 \
+  --batteryState discharging \
+  --batteryLevel 100
+```
