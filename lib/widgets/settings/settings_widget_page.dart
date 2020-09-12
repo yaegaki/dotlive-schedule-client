@@ -28,6 +28,16 @@ class SettingsWidgetPage extends StatelessWidget {
           )),
           Card(
             child: ListTile(
+              title: Text("竜崎あわい先生のアカウント",
+                  style: Theme.of(context).textTheme.headline6),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () {
+                launch('https://twitter.com/awaiflavia');
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
               leading: Icon(Icons.help),
               title: Text("ウィジェットとは",
                   style: Theme.of(context).textTheme.headline6),
@@ -36,7 +46,7 @@ class SettingsWidgetPage extends StatelessWidget {
                 launch('$baseURL/help#widget');
               },
             ),
-          )
+          ),
         ],
       ),
     );
