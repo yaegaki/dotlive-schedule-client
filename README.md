@@ -47,3 +47,10 @@ $ xcrun simctl status_bar "iPhone 8 Plus" override \
   --batteryState discharging \
   --batteryLevel 100
 ```
+
+必要な端末は以下の通り
+
+* iPhone 8 Plus
+* iPhone 11 Pro Max
+* iPad Pro (12.9-inch) (2nd generation)
+* iPad Pro (12.9-inch) (3rd generation)
