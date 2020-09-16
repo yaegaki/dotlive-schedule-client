@@ -26,16 +26,28 @@ import WidgetKit
         widgetChannel.setMethodCallHandler({
             [weak self](call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             // Note: this method is invoked on the UI thread.
-            guard call.method == "forceUpdateWidgets" else {
+            if call.method == "availableWidgetKit" {
+                self?.availableWidgetKit(result: result)
+            } else if call.method == "forceUpdateWidgets" {
+                self?.forceUpdateWidgets(result: result)
+            } else {
                 result(FlutterMethodNotImplemented)
-                return
             }
-            self?.forceUpdateWidgets(result: result)
         })
  
         
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    
+    private func availableWidgetKit(result: FlutterResult) {
+        if #available(iOS 14.0, *) {
+            result(Bool(true))
+            return
+        }
+        
+        result(Bool(false))
     }
     
     private func forceUpdateWidgets(result: FlutterResult) {
