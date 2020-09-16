@@ -57,8 +57,9 @@ class ScheduleManager {
     static func getScheduleInfo(handler: @escaping (ScheduleInfo?) -> Void) {
         let url = URL(string: "https://dotlive-schedule.appspot.com/api/awaisensei")!
         URLSession.shared.dataTask(with: url) { _data, res, err in
+            let cache = getCache()
             guard let data = _data else {
-                handler(nil)
+                handler(cache)
                 return
             }
             
@@ -69,11 +70,11 @@ class ScheduleManager {
             }
             
             guard let info = tempInfo, let url = URL(string: info.imageURL) else {
-                handler(nil)
+                handler(cache)
                 return
             }
             
-            if let cache = getCache(), cache.tweetId == info.tweetId {
+            if let cache = cache, cache.tweetId == info.tweetId {
                 handler(cache)
                 return
             }
@@ -84,7 +85,7 @@ class ScheduleManager {
                     updateCache(info: newInfo)
                     handler(newInfo)
                 } else {
-                    handler(nil)
+                    handler(cache)
                 }
             }
         }.resume()
