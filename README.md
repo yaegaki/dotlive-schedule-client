@@ -32,6 +32,21 @@ ios\Runner
 
 ## リリース時作業
 
+[Build and release an iOS app](https://flutter.dev/docs/deployment/ios)に書いてある。
+
+### バージョン更新
+
+`pubspec.yaml`のバージョンを更新する。  
+XCodeでもバージョンビルドの更新は手動で行う。  
+バージョンを変更する際はウィジェットも変更する。  
+
+### リリースビルド作成
+
+```sh
+$ flutter clean
+$ flutter build ios
+```
+
 ### スクリーンショット撮影
 
 以下のコマンドでステータスバーを変更して撮影する。  
