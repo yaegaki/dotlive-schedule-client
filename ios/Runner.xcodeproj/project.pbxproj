@@ -19,8 +19,6 @@
 		377FBEA025113DB400493E05 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 377FBE9F25113DB400493E05 /* SwiftUI.framework */; };
 		377FBEA325113DB400493E05 /* awaisensei2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377FBEA225113DB400493E05 /* awaisensei2.swift */; };
 		377FBEA625113DB500493E05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 377FBEA525113DB500493E05 /* Assets.xcassets */; };
-		377FBEA825113DB500493E05 /* awaisensei2.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 377FBEA425113DB400493E05 /* awaisensei2.intentdefinition */; };
-		377FBEA925113DB500493E05 /* awaisensei2.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 377FBEA425113DB400493E05 /* awaisensei2.intentdefinition */; };
 		377FBEAC25113DB500493E05 /* awaisensei2Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 377FBE9C25113DB400493E05 /* awaisensei2Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		37EF84242511917D00180670 /* ScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EF84232511917D00180670 /* ScheduleManager.swift */; };
 		37EF84A82511BA7D00180670 /* ScheduleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EF84232511917D00180670 /* ScheduleManager.swift */; };
@@ -89,7 +87,6 @@
 		377FBE9D25113DB400493E05 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		377FBE9F25113DB400493E05 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		377FBEA225113DB400493E05 /* awaisensei2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = awaisensei2.swift; sourceTree = "<group>"; };
-		377FBEA425113DB400493E05 /* awaisensei2.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = awaisensei2.intentdefinition; sourceTree = "<group>"; };
 		377FBEA525113DB500493E05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		377FBEA725113DB500493E05 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37EF84232511917D00180670 /* ScheduleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleManager.swift; sourceTree = "<group>"; };
@@ -156,7 +153,6 @@
 			children = (
 				37567F922511D80000CC33F5 /* awaisensei-placeholder.jpg */,
 				377FBEA225113DB400493E05 /* awaisensei2.swift */,
-				377FBEA425113DB400493E05 /* awaisensei2.intentdefinition */,
 				377FBEA525113DB500493E05 /* Assets.xcassets */,
 				377FBEA725113DB500493E05 /* Info.plist */,
 			);
@@ -486,7 +482,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				377FBEA825113DB500493E05 /* awaisensei2.intentdefinition in Sources */,
 				377FBEA325113DB400493E05 /* awaisensei2.swift in Sources */,
 				37EF84A82511BA7D00180670 /* ScheduleManager.swift in Sources */,
 			);
@@ -497,7 +492,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				377FBEA925113DB500493E05 /* awaisensei2.intentdefinition in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -8,15 +8,14 @@
 
 import WidgetKit
 import SwiftUI
-import Intents
 
-struct Provider: IntentTimelineProvider {
+struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), configuration: ConfigurationIntent(), info: Provider.getCacheOrPlaceholderInfo(), family: context.family)
+        SimpleEntry(date: Date(), info: Provider.getCacheOrPlaceholderInfo(), family: context.family)
     }
     
-    func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), configuration: configuration, info: Provider.getCacheOrPlaceholderInfo(), family: context.family)
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        let entry = SimpleEntry(date: Date(), info: Provider.getCacheOrPlaceholderInfo(), family: context.family)
         completion(entry)
     }
     
@@ -28,23 +27,22 @@ struct Provider: IntentTimelineProvider {
         return ScheduleInfo(createAt: Date(), tweetId: "placeholder", title: "🐢9/15(火)どっとライブ予定表🐢", imageData: Data(), image: UIImage(named: "awaisensei-placeholder")!)
     }
     
-    func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         ScheduleManager.getScheduleInfo(handler: { info in
-            let timeline = createTimeline(configuration: configuration, family: context.family, info: info)
+            let timeline = createTimeline(family: context.family, info: info)
             completion(timeline)
         })
     }
     
-    private func createTimeline(configuration: ConfigurationIntent, family: WidgetFamily, info: ScheduleInfo?) -> Timeline<SimpleEntry> {
+    private func createTimeline(family: WidgetFamily, info: ScheduleInfo?) -> Timeline<SimpleEntry> {
         let currentDate = Date()
         let refreshDate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
-        return Timeline(entries: [SimpleEntry(date: currentDate, configuration: configuration, info: info, family: family)], policy: .after(refreshDate))
+        return Timeline(entries: [SimpleEntry(date: currentDate, info: info, family: family)], policy: .after(refreshDate))
     }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let configuration: ConfigurationIntent
     let info: ScheduleInfo?
     let family: WidgetFamily
 }
@@ -105,7 +103,7 @@ struct awaisensei2: Widget {
     static let gradient = LinearGradient.init(gradient: Gradient(colors: [Color.init(red: 0x39/255, green: 0xbb/255, blue: 0xff/255), Color.init(red: 0x1b/255, green: 0x9e/255, blue: 0xff/255)]), startPoint: .top, endPoint: .bottom)
     
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
             awaisensei2EntryView(entry: entry)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(awaisensei2.gradient)
@@ -125,7 +123,7 @@ struct awaisensei2_Previews: PreviewProvider {
     }
     
     static func getView(family: WidgetFamily) -> some View {
-        awaisensei2EntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent(), info: Provider.getCacheOrPlaceholderInfo(), family: family))
+        awaisensei2EntryView(entry: SimpleEntry(date: Date(), info: Provider.getCacheOrPlaceholderInfo(), family: family))
             .previewContext(WidgetPreviewContext(family:family))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(awaisensei2.gradient)
