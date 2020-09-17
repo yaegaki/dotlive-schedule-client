@@ -87,7 +87,7 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
             title:
                 Text('ウィジェットの更新', style: Theme.of(context).textTheme.headline6),
             subtitle:
-                Text('ウィジェットを強制的に更新します。\nデータが読み込めない場合や表示がおかしい場合にお試しください。'),
+                Text('ウィジェットを強制的に更新します。\nデータが読み込めない場合や表示がおかしい場合にお試しください。\n更新しても改善されない場合は時間経過で改善される場合があります。'),
           ),
           RaisedButton(
               child: Text('更新'),
@@ -98,8 +98,7 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
       )));
     }
 
-    final widgetHelpURL =
-        _availableWidgetKit ? '$baseURL/help#widget-ios14' : '$baseURL/help#widget';
+    final widgetHelpURL = '$baseURL/help#widget';
     widgets.add(Card(
       child: ListTile(
         leading: Icon(Icons.help),
