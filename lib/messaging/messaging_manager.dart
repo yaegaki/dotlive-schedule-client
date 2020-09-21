@@ -80,18 +80,19 @@ class MessagingManager extends ChangeNotifier {
   }
 
   Future<void> subscribeAllTopic() async {
-    final futures = (await getTopics())
-        // .map((t) {
-        //   print('${t.displayName}:${t.name}:${t.subscribed}');
-        //   return t;
-        // })
-        .where((t) => !t.subscribed)
-        .map((t) => _firebaseMessaging.subscribeToTopic(t.name));
-
-    await Future.wait(futures);
+    final topics = await getTopics();
+    for (final topic in topics) {
+      if (topic.subscribed) {
+        continue;
+      }
+      // subscribeToTopicは並列にやっても直列にやっても速度が変わらない
+      await _firebaseMessaging
+          .subscribeToTopic(topic.name)
+          .timeout(Duration(seconds: 10));
+    }
   }
 
-  DateTimeJST getDateFromLastReceivedMessage () {
+  DateTimeJST getDateFromLastReceivedMessage() {
     final data = _lastReceivedMessage?.data;
     if (data == null) return null;
 
