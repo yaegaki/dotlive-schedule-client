@@ -49,8 +49,8 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildDialog(BuildContext context, CalendarFilterOption op,
       List<CalendarActor> actors, Set<String> filters, StateSetter setState) {
     final switches = actors
-        .map((actor) => SwitchListTile(
-            onChanged: (v) {
+        .map((actor) => _buildSwitchListTile(
+                context, Text(actor.name), !filters.contains(actor.id), (v) {
               setState(() {
                 if (filters.contains(actor.id)) {
                   filters.remove(actor.id);
@@ -58,9 +58,7 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
                   filters.add(actor.id);
                 }
               });
-            },
-            value: !filters.contains(actor.id),
-            title: Text(actor.name)))
+            }))
         .toList();
     return AlertDialog(
       title: Text('絞り込み'),
@@ -111,6 +109,35 @@ class CalendarAppBar extends StatelessWidget implements PreferredSizeWidget {
             },
             child: Text("OK")),
       ],
+    );
+  }
+
+  Widget _buildSwitchListTile(BuildContext context, Widget title, bool value,
+      ValueChanged<bool> onChanged) {
+    // 標準のSwitchListTileはswitchを切り替えたときにFeedback.forTapが存在しないので付け加える
+
+    final trailing = Switch(
+      value: value,
+      onChanged: (v) {
+        Feedback.forTap(context);
+        onChanged(v);
+      },
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+    return MergeSemantics(
+      child: ListTileTheme.merge(
+        selectedColor: Theme.of(context).accentColor,
+        child: ListTile(
+          title: title,
+          trailing: trailing,
+          enabled: onChanged != null,
+          onTap: onChanged != null
+              ? () {
+                  onChanged(!value);
+                }
+              : null,
+        ),
+      ),
     );
   }
 }
