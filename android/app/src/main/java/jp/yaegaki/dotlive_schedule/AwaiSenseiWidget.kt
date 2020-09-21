@@ -32,7 +32,7 @@ class MyWorker(context: Context, params: WorkerParameters) : Worker(context, par
             views.setTextViewText(R.id.appwidget_text, info.title)
             views.setImageViewBitmap(R.id.imageView, info.image)
 
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/awaiflavia/status/" + info.tweetId))
+            val intent = Intent(applicationContext, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
             views.setOnClickPendingIntent(R.id.imageView, pendingIntent)
         } else {
