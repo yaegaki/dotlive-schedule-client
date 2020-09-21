@@ -32,7 +32,7 @@ class MessagingManager extends ChangeNotifier {
 
     await _flutterLocalNotificationsPlugin.initialize(
         InitializationSettings(
-          AndroidInitializationSettings('ic_launcher_foreground'),
+          AndroidInitializationSettings('ic_notification'),
           IOSInitializationSettings(),
         ), onSelectNotification: (s) {
       _lastReceivedMessage = Message(s);

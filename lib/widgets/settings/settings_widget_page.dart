@@ -50,7 +50,24 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
 
     final widgets = <Widget>[];
 
-    final widgetSSURL = _availableWidgetKit ? 'https://dotlive-schedule.appspot.com/ss-widget3.png' : 'https://dotlive-schedule.appspot.com/ss-widget2.png';
+    String widgetSSURL;
+
+    String widgetDescription;
+    if (Platform.isIOS) {
+      widgetDescription = '''このアプリにはどっとライブ予定表ウィジェットが付属しています。
+このウィジェットは竜崎あわい先生(@awaiflavia)の最新のどっとライブ予定表を表示するものです。
+アプリを立ち上げることなくホーム画面及びロック画面から素早くどっとライブ予定表を確認することができます。''';
+
+      widgetSSURL = _availableWidgetKit
+          ? 'https://dotlive-schedule.appspot.com/ss-widget3.png'
+          : 'https://dotlive-schedule.appspot.com/ss-widget2.png';
+    } else {
+      widgetDescription = '''このアプリにはどっとライブ予定表ウィジェットが付属しています。
+このウィジェットは竜崎あわい先生(@awaiflavia)の最新のどっとライブ予定表を表示するものです。
+アプリを立ち上げることなくホーム画面から素早くどっとライブ予定表を確認することができます。''';
+      widgetSSURL =
+          'https://dotlive-schedule.appspot.com/ss-widget-android.png';
+    }
 
     widgets.add(Card(
         child: Column(
@@ -59,9 +76,7 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
         ListTile(
           title:
               Text('ウィジェットについて', style: Theme.of(context).textTheme.headline6),
-          subtitle: Text('''このアプリにはどっとライブ予定表ウィジェットが付属しています。
-このウィジェットは竜崎あわい先生(@awaiflavia)の最新のどっとライブ予定表を表示するものです。
-アプリを立ち上げることなくホーム画面及びロック画面から素早くどっとライブ予定表を確認することができます。'''),
+          subtitle: Text(widgetDescription),
         ),
         Image.network(widgetSSURL),
       ],
@@ -78,7 +93,7 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
       ),
     ));
 
-    if (_availableWidgetKit) {
+    if (_availableWidgetKit || Platform.isAndroid) {
       widgets.add(Card(
           child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -86,8 +101,8 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
           ListTile(
             title:
                 Text('ウィジェットの更新', style: Theme.of(context).textTheme.headline6),
-            subtitle:
-                Text('ウィジェットを強制的に更新します。\nデータが読み込めない場合や表示がおかしい場合にお試しください。\n更新しても改善されない場合は時間経過で改善される場合があります。'),
+            subtitle: Text(
+                'ウィジェットを強制的に更新します。\nデータが読み込めない場合や表示がおかしい場合にお試しください。\n更新しても改善されない場合は時間経過で改善される場合があります。'),
           ),
           RaisedButton(
               child: Text('更新'),
@@ -98,7 +113,9 @@ class _SettingsWidgetPageState extends State<SettingsWidgetPage> {
       )));
     }
 
-    final widgetHelpURL = '$baseURL/help#widget';
+    final widgetHelpURL = Platform.isIOS
+        ? '$baseURL/help#widget'
+        : '$baseURL/help#widget-android';
     widgets.add(Card(
       child: ListTile(
         leading: Icon(Icons.help),

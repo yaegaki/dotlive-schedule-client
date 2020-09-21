@@ -25,6 +25,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+
 android {
     compileSdkVersion 28
 
@@ -45,6 +48,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -63,6 +70,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.work:work-runtime-ktx:2.4.0"
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.kittinunf.fuel:fuel:2.2.3'
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android-extensions'
