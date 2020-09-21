@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
+import android.view.View
 import android.widget.RemoteViews
 import androidx.work.*
 import com.github.kittinunf.fuel.Fuel
@@ -31,12 +32,26 @@ class MyWorker(context: Context, params: WorkerParameters) : Worker(context, par
         if (info != null) {
             views.setTextViewText(R.id.appwidget_text, info.title)
             views.setImageViewBitmap(R.id.imageView, info.image)
+            views.setViewVisibility(R.id.imageView, View.VISIBLE)
+            views.setViewVisibility(R.id.reloadButton, View.GONE)
 
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
+            val pendingIntent = Intent(applicationContext, MainActivity::class.java).let {
+                PendingIntent.getActivity(applicationContext, 0, it, 0)
+            }
             views.setOnClickPendingIntent(R.id.imageView, pendingIntent)
         } else {
             views.setTextViewText(R.id.appwidget_text, "読み込みに失敗しました")
+            views.setViewVisibility(R.id.imageView, View.GONE)
+            views.setViewVisibility(R.id.reloadButton, View.VISIBLE)
+
+            val intent = Intent(applicationContext, AwaiSenseiWidget::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                val ids = AppWidgetManager.getInstance(applicationContext)
+                        .getAppWidgetIds(ComponentName(applicationContext, AwaiSenseiWidget::class.java))
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            }
+            val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            views.setOnClickPendingIntent(R.id.reloadButton, pendingIntent)
         }
 
         AppWidgetManager
@@ -142,5 +157,6 @@ internal fun initAppWidget(
 ) {
     val views = RemoteViews(context.packageName, R.layout.awai_sensei_widget)
     views.setTextViewText(R.id.appwidget_text, "読み込み中")
+    views.setViewVisibility(R.id.reloadButton, View.GONE)
     appWidgetManager.updateAppWidget(appWidgetId, views)
 }

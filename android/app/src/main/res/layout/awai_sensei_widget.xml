@@ -39,5 +39,12 @@
             android:contentDescription="dotlive schedule"
             android:scaleType="fitCenter"
             android:background="@null"/>
+
+        <Button
+            android:id="@+id/reloadButton"
+            android:text="再読み込み"
+            android:padding="15dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
     </LinearLayout>
 </RelativeLayout>
