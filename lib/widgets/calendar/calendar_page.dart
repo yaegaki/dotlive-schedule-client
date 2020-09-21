@@ -25,7 +25,6 @@ class _CalendarPageState extends State<CalendarPage> {
       initialPage: _currentPage,
     );
 
-    _manager.fetchCalendar(_manager.currentDate, false);
     _manager.addListener(_managerListener);
   }
 
