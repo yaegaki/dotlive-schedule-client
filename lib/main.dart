@@ -3,6 +3,7 @@ import 'package:dotlive_schedule/messaging/messaging_manager.dart';
 import 'package:dotlive_schedule/widgets/homepage/home_page.dart';
 import 'package:dotlive_schedule/widgets/initialpage/initial_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
@@ -49,6 +50,15 @@ class MyApp extends StatelessWidget {
                     value: initializer.messagingManager, child: child);
               },
               child: MyHomePage())),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('ja', 'JP'),
+      ],
+      debugShowCheckedModeBanner: false,
     );
   }
 }
