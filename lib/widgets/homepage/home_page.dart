@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dotlive_schedule/calendar/calendar_manager.dart';
 import 'package:dotlive_schedule/common/datetime_jst.dart';
 import 'package:dotlive_schedule/messaging/messaging_manager.dart';
@@ -24,6 +26,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  List<int> _history = [];
+  int _historyIndex = -1;
   DateTimeJST _startDate;
 
   @override
@@ -82,43 +86,79 @@ class _MyHomePageState extends State<MyHomePage> {
             create: (_) => CalendarFilterOption(),
           ),
         ],
-        child: Scaffold(
-          appBar: appBar,
-          drawer: drawer,
-          body: child,
-          bottomNavigationBar: FFNavigationBar(
-            theme: FFNavigationBarTheme(
-              barBackgroundColor: themeData.canvasColor,
-              selectedItemBackgroundColor: selectedItemColor,
-              selectedItemIconColor: themeData.canvasColor,
-              selectedItemBorderColor: themeData.canvasColor,
-              selectedItemLabelColor: selectedItemColor,
-              showSelectedItemShadow: false,
+        child: WillPopScope(
+                  onWillPop: _popHistory,
+                  child: Scaffold(
+            appBar: appBar,
+            drawer: drawer,
+            body: child,
+            bottomNavigationBar: FFNavigationBar(
+              theme: FFNavigationBarTheme(
+                barBackgroundColor: themeData.canvasColor,
+                selectedItemBackgroundColor: selectedItemColor,
+                selectedItemIconColor: themeData.canvasColor,
+                selectedItemBorderColor: themeData.canvasColor,
+                selectedItemLabelColor: selectedItemColor,
+                showSelectedItemShadow: false,
+              ),
+              selectedIndex: _selectedIndex,
+              onSelectTab: (index) {
+                Feedback.forTap(context);
+                if (_selectedIndex == index) return;
+                setState(() {
+                  _pushHistory(_selectedIndex);
+                  _selectedIndex = index;
+                });
+              },
+              items: [
+                FFNavigationBarItem(
+                  iconData: Icons.bookmark,
+                  label: 'スケジュール',
+                ),
+                FFNavigationBarItem(
+                  iconData: Icons.calendar_today,
+                  label: 'カレンダー',
+                ),
+                FFNavigationBarItem(
+                  iconData: Icons.settings,
+                  label: '設定',
+                )
+              ],
             ),
-            selectedIndex: _selectedIndex,
-            onSelectTab: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            items: [
-              FFNavigationBarItem(
-                iconData: Icons.bookmark,
-                label: 'スケジュール',
-              ),
-              FFNavigationBarItem(
-                iconData: Icons.calendar_today,
-                label: 'カレンダー',
-              ),
-              FFNavigationBarItem(
-                iconData: Icons.settings,
-                label: '設定',
-              )
-            ],
           ),
         ),
       );
     });
+  }
+
+  _pushHistory(int index) {
+    if (!Platform.isAndroid) return;
+
+    // 100件以上になったら消す
+    if (_historyIndex >= 100) {
+      _history.removeRange(0, 50);
+      _historyIndex -= 50;
+    }
+
+    _historyIndex++;
+    if (_historyIndex >= _history.length) {
+      _history.add(index);
+    } else {
+      _history[_historyIndex] = index;
+    }
+  }
+
+  Future<bool> _popHistory() async {
+    if (!Platform.isAndroid) return true;
+
+    if (_historyIndex < 0) return true;
+
+    setState(() {
+      _selectedIndex = _history[_historyIndex];
+      _historyIndex--;
+    });
+
+    return false;
   }
 }
 
