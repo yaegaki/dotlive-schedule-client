@@ -32,22 +32,47 @@ ios\Runner
 
 ## リリース時作業
 
-[Build and release an iOS app](https://flutter.dev/docs/deployment/ios)に書いてある。
+iOS:[Build and release an iOS app](https://flutter.dev/docs/deployment/ios)  
+Android:[Build and release an Android app](https://flutter.dev/docs/deployment/android)  
 
 ### バージョン更新
 
 `pubspec.yaml`のバージョンを更新する。  
-XCodeでもバージョンビルドの更新は手動で行う。  
+
+#### iOS
+
+XCodeでバージョンビルドの更新は手動で行う。  
 バージョンを変更する際はウィジェットも変更する。  
 
 ### リリースビルド作成
+
+#### iOS
 
 ```sh
 $ flutter clean
 $ flutter build ios
 ```
 
+#### Android
+
+```sh
+$ flutter clean
+$ flutter build appbundle
+```
+
+ビルドしたappbundleのテストは[bundletool](https://github.com/google/bundletool)を使用する。
+
+```sh 
+# ビルド
+$ java -jar bundletool-all-1.2.0.jar build-apks --bundle=build\app\outputs\bundle\release\app-release.aab --output=out.apks --ks=PATH_TO_KEYSTORE --ks-key-alias=KEY_ALIAS --ks-pass=pass:KEYSTORE_PASS --key-pass=pass:KEY_PASS --overwrite
+
+# インストール
+$ java -jar bundletool-all-1.2.0.jar install-apks --apks=out.apks --device-id=DEVICE_ID
+```
+
 ### スクリーンショット撮影
+
+#### iOS
 
 以下のコマンドでステータスバーを変更して撮影する。  
 
@@ -69,3 +94,18 @@ $ xcrun simctl status_bar "iPhone 8 Plus" override \
 * iPhone 11 Pro Max
 * iPad Pro (12.9-inch) (2nd generation)
 * iPad Pro (12.9-inch) (3rd generation)
+
+#### Android
+
+```sh
+# デモモード
+$ adb shell am broadcast -a com.android.systemui.demo -e command enter
+
+# wifi,通知,時間の設定
+$ adb shell am broadcast -a com.android.systemui.demo -e command network -e wifi show -e level 4
+$ adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
+$ adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0406
+
+# デモモード終了
+$ adb shell am broadcast -a com.android.systemui.demo -e command exit
+```

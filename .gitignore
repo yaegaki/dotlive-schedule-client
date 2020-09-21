@@ -39,3 +39,6 @@ lib/generated_plugin_registrant.dart
 # firebase
 GoogleService-Info.plist
 google-services.json
+
+# Android key properties
+key.properties
