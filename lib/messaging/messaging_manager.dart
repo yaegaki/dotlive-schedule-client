@@ -127,13 +127,17 @@ class MessagingManager extends ChangeNotifier {
       payload = msg['date'];
     }
 
-    if (title == null || body == null || payload == null) return;
-
     if (silent) {
-      _lastReceivedMessage = Message(payload);
-      notifyListeners();
+      // Androidでアプリがバックグラウンドの時にメッセージを受信すると
+      // title == null, body == nullになる
+      if (payload != null) {
+        _lastReceivedMessage = Message(payload);
+        notifyListeners();
+      }
       return;
     }
+
+    if (title == null || body == null || payload == null) return;
 
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'fcm_fallback_notification_channel', '通知', '通知');
