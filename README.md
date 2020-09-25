@@ -44,6 +44,11 @@ Android:[Build and release an Android app](https://flutter.dev/docs/deployment/a
 XCodeでバージョンビルドの更新は手動で行う。  
 バージョンを変更する際はウィジェットも変更する。  
 
+#### Android
+
+バージョンの+nの部分は毎回違う値でなければストアにアップロードできない。  
+で一度アップロードしたらバージョンが変わっても減らしてはいけない。  
+
 ### リリースビルド作成
 
 #### iOS
